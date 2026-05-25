@@ -577,7 +577,7 @@ def build_html(ranking, starts, events):
     <div class="topbar">
       <div>
         <h1>Ranking Białystok - półfinał ligi</h1>
-        <p class="subhead">Okręg białostocki, wyniki od 16.05.2026 do 01.08.2026, ranking liczony z 3 najlepszych startów zawodnika.</p>
+        <p class="subhead">Okręg białostocki. Półfinał: wyniki od 16.05.2026 do 01.08.2026. Kwalifikacje mistrzostw: wyniki do 16.08.2026 włącznie.</p>
       </div>
       <div class="mark" aria-hidden="true"></div>
     </div>
@@ -617,12 +617,12 @@ def build_html(ranking, starts, events):
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="suma_3_najlepszych">Suma 3</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="suma_5_najlepszych">Suma 5</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty półf.</button></th>
               <th class="number">1</th>
               <th class="number">2</th>
               <th class="number">3</th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Mistrz.</button></th>
-              <th>Zawody wliczone</th>
+              <th>Zawody półfinału</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
@@ -630,7 +630,7 @@ def build_html(ranking, starts, events):
       </div>
       <div class="legend" aria-label="Opis etykiet">
         <div class="legend-item"><span class="badge">Półfinał</span><span>TOP 6 rankingu, liczone według sumy 3 najlepszych startów zawodnika w okresie 16.05.2026-01.08.2026.</span></div>
-        <div class="legend-item"><span class="badge championship">Mistrzostwa</span><span>TOP 3 kwalifikacji mistrzostw, liczone według sumy 5 najlepszych startów zawodnika w tym samym okresie.</span></div>
+        <div class="legend-item"><span class="badge championship">Mistrzostwa</span><span>TOP 3 kwalifikacji mistrzostw, liczone według sumy 5 najlepszych startów zawodnika w okresie 16.05.2026-16.08.2026 włącznie.</span></div>
       </div>
       <div class="empty" id="rankingEmpty" hidden>Brak wyników dla podanego filtra.</div>
     </section>
@@ -759,8 +759,8 @@ def build_html(ranking, starts, events):
       body.replaceChildren();
       rows.forEach((row) => {{
         const tr = document.createElement("tr");
-        const isTopSix = Number(row.miejsce) <= 6;
-        const isChampionship = Number(row.miejsce_mistrzostwa) <= 3;
+        const isTopSix = row.miejsce !== "" && Number(row.miejsce) <= 6;
+        const isChampionship = row.miejsce_mistrzostwa !== "" && Number(row.miejsce_mistrzostwa) <= 3;
         if (isTopSix) tr.className = "top-six";
         const rankCell = document.createElement("td");
         const rankWrap = document.createElement("span");

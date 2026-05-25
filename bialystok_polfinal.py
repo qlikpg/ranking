@@ -8,7 +8,8 @@ from ranking_pzlow_lata import pobierz_wyniki_zawodow, pobierz_zawody_z_wynikami
 
 
 DATA_OD = date(2026, 5, 16)
-DATA_DO = date(2026, 8, 1)
+DATA_DO_POLFINAL = date(2026, 8, 1)
+DATA_DO_MISTRZOSTWA = date(2026, 8, 16)
 OKREG = "białystok"
 OUTPUT_FILE = "bialystok_polfinal.xlsx"
 EXPORT_EXCEL = False
@@ -57,12 +58,12 @@ def parse_event_dates(text: str) -> list[date]:
     return parsed
 
 
-def event_in_date_range(data_zawodow: str) -> bool:
+def event_in_date_range(data_zawodow: str, data_do: date) -> bool:
     dates = parse_event_dates(data_zawodow)
-    return any(DATA_OD <= event_date <= DATA_DO for event_date in dates)
+    return any(DATA_OD <= event_date <= data_do for event_date in dates)
 
 
-def filter_events_for_period(events: pd.DataFrame) -> pd.DataFrame:
+def filter_events_for_period(events: pd.DataFrame, data_do: date) -> pd.DataFrame:
     if events.empty:
         return events
 
@@ -70,7 +71,9 @@ def filter_events_for_period(events: pd.DataFrame) -> pd.DataFrame:
     events["daty_rozpoznane"] = events["data_zawodow"].apply(
         lambda value: ", ".join(d.isoformat() for d in parse_event_dates(value))
     )
-    events = events[events["data_zawodow"].apply(event_in_date_range)].copy()
+    events = events[
+        events["data_zawodow"].apply(lambda value: event_in_date_range(value, data_do))
+    ].copy()
     events = events.sort_values(["data_zawodow", "nazwa_zawodow"]).reset_index(drop=True)
     return events
 
@@ -100,13 +103,18 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         .reset_index()
     )
 
-    starts = starts.sort_values(
+    polfinal_starts = starts[
+        starts["data_zawodow"].apply(lambda value: event_in_date_range(value, DATA_DO_POLFINAL))
+    ].copy()
+    polfinal_starts = polfinal_starts.sort_values(
         ["zawodnik", "wynik", "data_zawodow"],
         ascending=[True, False, True],
     )
-    starts["nr_wyniku_zawodnika"] = starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
+    polfinal_starts["nr_wyniku_zawodnika"] = (
+        polfinal_starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
+    )
 
-    top3 = starts[starts["nr_wyniku_zawodnika"] <= 3].copy()
+    top3 = polfinal_starts[polfinal_starts["nr_wyniku_zawodnika"] <= 3].copy()
 
     ranking = (
         top3
@@ -123,7 +131,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
     )
 
     all_starts = (
-        starts
+        polfinal_starts
         .groupby(["zawodnik", "okreg"], dropna=False)
         .agg(
             liczba_startow=("wynik", "count"),
@@ -137,6 +145,11 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         ranking["suma_3_najlepszych"] / ranking["liczba_wynikow_do_rankingu"]
     ).round(2)
 
+    starts = starts.sort_values(
+        ["zawodnik", "wynik", "data_zawodow"],
+        ascending=[True, False, True],
+    )
+    starts["nr_wyniku_zawodnika"] = starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
     top5 = starts[starts["nr_wyniku_zawodnika"] <= 5].copy()
     championship = (
         top5
@@ -157,6 +170,12 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
     )
     championship["miejsce_mistrzostwa"] = range(1, len(championship) + 1)
 
+    ranking = ranking.sort_values(
+        ["suma_3_najlepszych", "najlepszy_1", "liczba_startow"],
+        ascending=[False, False, False],
+    )
+    ranking.insert(0, "miejsce", range(1, len(ranking) + 1))
+
     ranking = ranking.merge(
         championship[
             [
@@ -169,14 +188,14 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             ]
         ],
         on=["zawodnik", "okreg"],
-        how="left",
+        how="outer",
     )
 
     ranking = ranking.sort_values(
-        ["suma_3_najlepszych", "najlepszy_1", "liczba_startow"],
-        ascending=[False, False, False],
+        ["miejsce", "miejsce_mistrzostwa"],
+        ascending=[True, True],
+        na_position="last",
     )
-    ranking.insert(0, "miejsce", range(1, len(ranking) + 1))
 
     ranking = ranking[
         [
@@ -215,12 +234,12 @@ def main():
     events = pobierz_zawody_z_wynikami()
     print("Zawody z linkiem do wyników:", len(events))
 
-    events_in_period = filter_events_for_period(events)
+    events_in_period = filter_events_for_period(events, DATA_DO_MISTRZOSTWA)
     print(
-        "Zawody w okresie",
+        "Zawody w okresie kwalifikacji mistrzostw",
         DATA_OD.strftime("%d.%m.%Y"),
         "-",
-        DATA_DO.strftime("%d.%m.%Y") + ":",
+        DATA_DO_MISTRZOSTWA.strftime("%d.%m.%Y") + ":",
         len(events_in_period),
     )
 
