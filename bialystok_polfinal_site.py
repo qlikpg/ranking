@@ -427,6 +427,15 @@ def build_html(ranking, starts, events):
       text-align: right;
     }}
 
+    td.events-list {{
+      min-width: 280px;
+      line-height: 1.35;
+    }}
+
+    td.events-list div + div {{
+      margin-top: 4px;
+    }}
+
     tbody tr:hover {{
       background: #f8fbfc;
     }}
@@ -623,7 +632,7 @@ def build_html(ranking, starts, events):
               <th class="number">4</th>
               <th class="number">5</th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
-              <th>Zawody półfinału</th>
+              <th>5 najlepszych zawodów</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
@@ -741,6 +750,17 @@ def build_html(ranking, starts, events):
       return td;
     }}
 
+    function eventsCell(value) {{
+      const td = document.createElement("td");
+      td.className = "events-list";
+      text(value).split(" | ").filter(Boolean).forEach((eventName) => {{
+        const line = document.createElement("div");
+        line.textContent = eventName;
+        td.appendChild(line);
+      }});
+      return td;
+    }}
+
     function linkCell(url) {{
       const td = document.createElement("td");
       if (url) {{
@@ -779,7 +799,7 @@ def build_html(ranking, starts, events):
         if (isChampionship) {{
           const championshipBadge = document.createElement("span");
           championshipBadge.className = "badge championship";
-          championshipBadge.textContent = "Kwalifikacja mistrzostwa";
+          championshipBadge.textContent = "Mistrzostwa";
           rankWrap.appendChild(championshipBadge);
         }}
         rankCell.appendChild(rankWrap);
@@ -795,7 +815,7 @@ def build_html(ranking, starts, events):
           cell(row.najlepszy_4, "number"),
           cell(row.najlepszy_5, "number"),
           cell(row.miejsce_mistrzostwa, "number"),
-          cell(row.zawody_wliczone)
+          eventsCell(row.zawody_wliczone)
         );
         body.appendChild(tr);
       }});
