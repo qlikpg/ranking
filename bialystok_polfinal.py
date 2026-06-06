@@ -114,17 +114,20 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         polfinal_starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
     )
 
-    top3 = polfinal_starts[polfinal_starts["nr_wyniku_zawodnika"] <= 3].copy()
+    top5_polfinal = polfinal_starts[polfinal_starts["nr_wyniku_zawodnika"] <= 5].copy()
 
     ranking = (
-        top3
+        top5_polfinal
         .groupby(["zawodnik", "okreg"], dropna=False)
         .agg(
-            suma_3_najlepszych=("wynik", "sum"),
+            suma_3_najlepszych=("wynik", lambda x: sum(sorted(x, reverse=True)[:3])),
+            suma_5_najlepszych_polfinal=("wynik", "sum"),
             liczba_wynikow_do_rankingu=("wynik", "count"),
             najlepszy_1=("wynik", lambda x: sorted(x, reverse=True)[0] if len(x) >= 1 else None),
             najlepszy_2=("wynik", lambda x: sorted(x, reverse=True)[1] if len(x) >= 2 else None),
             najlepszy_3=("wynik", lambda x: sorted(x, reverse=True)[2] if len(x) >= 3 else None),
+            najlepszy_4=("wynik", lambda x: sorted(x, reverse=True)[3] if len(x) >= 4 else None),
+            najlepszy_5=("wynik", lambda x: sorted(x, reverse=True)[4] if len(x) >= 5 else None),
             zawody_wliczone=("nazwa_zawodow", lambda x: " | ".join(map(str, x))),
         )
         .reset_index()
@@ -142,7 +145,10 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
 
     ranking = ranking.merge(all_starts, on=["zawodnik", "okreg"], how="left")
     ranking["srednia_3_najlepszych"] = (
-        ranking["suma_3_najlepszych"] / ranking["liczba_wynikow_do_rankingu"]
+        ranking["suma_3_najlepszych"] / ranking["liczba_wynikow_do_rankingu"].clip(upper=3)
+    ).round(2)
+    ranking["srednia_5_najlepszych_polfinal"] = (
+        ranking["suma_5_najlepszych_polfinal"] / ranking["liczba_wynikow_do_rankingu"]
     ).round(2)
 
     starts = starts.sort_values(
@@ -204,11 +210,14 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             "okreg",
             "suma_3_najlepszych",
             "srednia_3_najlepszych",
+            "srednia_5_najlepszych_polfinal",
             "liczba_wynikow_do_rankingu",
             "liczba_startow",
             "najlepszy_1",
             "najlepszy_2",
             "najlepszy_3",
+            "najlepszy_4",
+            "najlepszy_5",
             "miejsce_mistrzostwa",
             "suma_5_najlepszych",
             "srednia_5_najlepszych",

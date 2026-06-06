@@ -614,14 +614,15 @@ def build_html(ranking, starts, events):
             <tr>
               <th><button class="sort-btn" type="button" data-ranking-sort="miejsce">Miejsce</button></th>
               <th><button class="sort-btn" type="button" data-ranking-sort="zawodnik">Zawodnik</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="suma_3_najlepszych">Suma 3</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="suma_5_najlepszych">Suma 5</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia 3</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_5_najlepszych_polfinal">Średnia 5</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty półf.</button></th>
               <th class="number">1</th>
               <th class="number">2</th>
               <th class="number">3</th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Mistrz.</button></th>
+              <th class="number">4</th>
+              <th class="number">5</th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
               <th>Zawody półfinału</th>
             </tr>
           </thead>
@@ -778,7 +779,7 @@ def build_html(ranking, starts, events):
         if (isChampionship) {{
           const championshipBadge = document.createElement("span");
           championshipBadge.className = "badge championship";
-          championshipBadge.textContent = "Mistrzostwa";
+          championshipBadge.textContent = "Kwalifikacja mistrzostwa";
           rankWrap.appendChild(championshipBadge);
         }}
         rankCell.appendChild(rankWrap);
@@ -786,12 +787,13 @@ def build_html(ranking, starts, events):
           rankCell,
           cell(row.zawodnik),
           cell(row.srednia_3_najlepszych, "number score"),
-          cell(row.suma_3_najlepszych, "number"),
-          cell(row.suma_5_najlepszych, "number"),
+          cell(row.srednia_5_najlepszych_polfinal, "number score"),
           cell(row.liczba_startow, "number"),
           cell(row.najlepszy_1, "number"),
           cell(row.najlepszy_2, "number"),
           cell(row.najlepszy_3, "number"),
+          cell(row.najlepszy_4, "number"),
+          cell(row.najlepszy_5, "number"),
           cell(row.miejsce_mistrzostwa, "number"),
           cell(row.zawody_wliczone)
         );
