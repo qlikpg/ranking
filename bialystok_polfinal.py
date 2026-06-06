@@ -84,24 +84,46 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
 
     df = results.copy()
     df = df[df["razem"].notna()].copy()
+    event_best_scores = (
+        df[df["razem"] > 0]
+        .groupby("nazwa_zawodow", dropna=False)["razem"]
+        .max()
+        .rename("najlepszy_wynik_zawodow")
+        .reset_index()
+    )
     df = df[df["okreg"].str.lower().str.strip() == OKREG].copy()
 
     if df.empty:
         return pd.DataFrame(), pd.DataFrame()
 
     # Jeżeli zawodnik ma kilka wpisów w jednych zawodach, bierzemy najlepszy wynik.
-    starts = (
+    discipline_columns = [col for col in ["krag", "os", "mop", "dzik", "rogacz"] if col in df.columns]
+    best_row_ids = (
         df
-        .groupby(["zawodnik", "okreg", "nazwa_zawodow"], dropna=False)
-        .agg(
-            wynik=("razem", "max"),
-            klasa=("klasa", "first"),
-            data_zawodow=("data_zawodow", "first"),
-            strzelnica=("strzelnica", "first"),
-            url_wynikow=("url_wynikow", "first"),
-        )
-        .reset_index()
+        .groupby(["zawodnik", "okreg", "nazwa_zawodow"], dropna=False)["razem"]
+        .idxmax()
     )
+    starts = df.loc[best_row_ids].copy()
+    starts = starts.rename(columns={"razem": "wynik"})
+    starts = starts.merge(event_best_scores, on="nazwa_zawodow", how="left")
+    starts["procent_do_najlepszego_w_zawodach"] = (
+        starts["wynik"] / starts["najlepszy_wynik_zawodow"] * 100
+    ).round(1)
+    starts = starts[
+        [
+            "zawodnik",
+            "okreg",
+            "nazwa_zawodow",
+            "wynik",
+            "najlepszy_wynik_zawodow",
+            "procent_do_najlepszego_w_zawodach",
+            "klasa",
+            "data_zawodow",
+            "strzelnica",
+            "url_wynikow",
+            *discipline_columns,
+        ]
+    ].reset_index(drop=True)
 
     polfinal_starts = starts[
         starts["data_zawodow"].apply(lambda value: event_in_date_range(value, DATA_DO_POLFINAL))

@@ -9,6 +9,15 @@ import pandas as pd
 SOURCE_FILE = Path("bialystok_polfinal.xlsx")
 OUTPUT_DIR = Path("site")
 OUTPUT_FILE = OUTPUT_DIR / "index.html"
+HIDDEN_ANALYSIS_FILE = OUTPUT_DIR / "analiza-slabosci.html"
+
+DISCIPLINES = [
+    ("krag", "Krag", 100),
+    ("os", "Os mysliwska", 100),
+    ("mop", "MOP", 100),
+    ("dzik", "Dzik", 100),
+    ("rogacz", "Rogacz", 100),
+]
 
 
 def configure_utf8_output():
@@ -47,6 +56,410 @@ def to_json_script(name, value):
     data = json.dumps(value, ensure_ascii=False)
     data = data.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     return f'<script type="application/json" id="{escape(name)}">{data}</script>'
+
+
+def to_number(value):
+    if value in ("", None):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    if pd.isna(number):
+        return None
+    return number
+
+
+def to_completed_score(value):
+    number = to_number(value)
+    if number is None or number <= 0:
+        return None
+    return number
+
+
+def fmt_number(value, digits=1):
+    if value is None:
+        return "-"
+    value = round(float(value), digits)
+    if float(value).is_integer():
+        return str(int(value))
+    return str(value).replace(".", ",")
+
+
+def build_weakness_analysis(starts):
+    available = [item for item in DISCIPLINES if any(item[0] in row for row in starts)]
+    if not available:
+        return []
+
+    players = {}
+    for row in starts:
+        player = str(row.get("zawodnik") or "").strip()
+        if not player:
+            continue
+        players.setdefault(player, []).append(row)
+
+    reports = []
+    for player, player_starts in players.items():
+        event_refs = []
+        for row in player_starts:
+            score = to_completed_score(row.get("wynik"))
+            event_best = to_completed_score(row.get("najlepszy_wynik_zawodow"))
+            pct = to_number(row.get("procent_do_najlepszego_w_zawodach"))
+            if pct is None and score is not None and event_best:
+                pct = score / event_best * 100
+            if score is None or event_best is None or pct is None:
+                continue
+            event_refs.append({
+                "event": str(row.get("nazwa_zawodow") or ""),
+                "date": str(row.get("data_zawodow") or ""),
+                "score": score,
+                "event_best": event_best,
+                "pct": pct,
+            })
+
+        discipline_reports = []
+        for code, label, max_score in available:
+            values = [to_completed_score(row.get(code)) for row in player_starts]
+            values = [value for value in values if value is not None]
+            if not values:
+                continue
+            avg = sum(values) / len(values)
+            best = max(values)
+            last = values[-1]
+            normalized_avg = avg / max_score * 100
+            improvement_to_max = max_score - avg
+            reserve_to_best = max(0, best - avg)
+            recent = values[-3:]
+            earlier = values[:-3]
+            trend = None
+            if earlier:
+                trend = (sum(recent) / len(recent)) - (sum(earlier) / len(earlier))
+            discipline_reports.append({
+                "code": code,
+                "label": label,
+                "starts": len(values),
+                "avg": avg,
+                "best": best,
+                "last": last,
+                "avg_pct": normalized_avg,
+                "improvement_to_max": improvement_to_max,
+                "reserve_to_best": reserve_to_best,
+                "trend": trend,
+            })
+
+        if not discipline_reports:
+            continue
+
+        discipline_reports.sort(key=lambda item: (item["avg_pct"], -item["improvement_to_max"]))
+        weakest = discipline_reports[0]
+        reports.append({
+            "player": player,
+            "starts": len(player_starts),
+            "weakest": weakest,
+            "disciplines": discipline_reports,
+            "event_refs": sorted(event_refs, key=lambda item: item["pct"]),
+            "avg_event_pct": (
+                sum(item["pct"] for item in event_refs) / len(event_refs)
+                if event_refs else None
+            ),
+            "overall_gap": sum(item["improvement_to_max"] for item in discipline_reports),
+            "avg_pct": sum(item["avg_pct"] for item in discipline_reports) / len(discipline_reports),
+        })
+
+    reports.sort(key=lambda item: (item["weakest"]["avg_pct"], -item["overall_gap"], item["player"]))
+    return reports
+
+
+def build_hidden_analysis_html(starts):
+    reports = build_weakness_analysis(starts)
+    rows = []
+    for report in reports:
+        weakest = report["weakest"]
+        details = "".join(
+            f"""
+            <div class="discipline">
+              <div>
+                <strong>{escape(item["label"])}</strong>
+                <span>{item["starts"]} starty, srednia {fmt_number(item["avg"])} pkt, rekord {fmt_number(item["best"])} pkt</span>
+              </div>
+              <div class="meter" aria-hidden="true"><i style="width: {max(0, min(100, item["avg_pct"])):.1f}%"></i></div>
+              <em>{fmt_number(item["avg_pct"])}%</em>
+            </div>
+            """
+            for item in report["disciplines"]
+        )
+        event_reference_rows = "".join(
+            f"""
+            <div class="event-ref">
+              <div>
+                <strong>{escape(item["event"])}</strong>
+                <span>{escape(item["date"])} · wynik {fmt_number(item["score"], 0)} / najlepszy {fmt_number(item["event_best"], 0)}</span>
+              </div>
+              <em>{fmt_number(item["pct"])}%</em>
+            </div>
+            """
+            for item in report["event_refs"]
+        )
+        if not event_reference_rows:
+            event_reference_rows = '<p class="muted-note">Brak danych o najlepszym wyniku z zawodów.</p>'
+        trend = weakest["trend"]
+        if trend is None:
+            trend_text = "za malo startow na trend"
+        elif trend > 0:
+            trend_text = f"trend +{fmt_number(trend)} pkt"
+        elif trend < 0:
+            trend_text = f"trend {fmt_number(trend)} pkt"
+        else:
+            trend_text = "trend bez zmian"
+
+        rows.append(f"""
+        <article class="player-card">
+          <div class="player-head">
+            <div>
+              <h2>{escape(report["player"])}</h2>
+              <p>{report["starts"]} starty w analizie</p>
+            </div>
+            <div class="weak-badge">
+              <span>Najsłabsza konkurencja</span>
+              <strong>{escape(weakest["label"])}</strong>
+            </div>
+          </div>
+          <div class="summary">
+            <div><span>Srednia slabszej</span><strong>{fmt_number(weakest["avg"])} pkt</strong></div>
+            <div><span>Skutecznosc</span><strong>{fmt_number(weakest["avg_pct"])}%</strong></div>
+            <div><span>Miejsce do poprawy</span><strong>{fmt_number(weakest["improvement_to_max"])} pkt</strong></div>
+            <div><span>Wlasna rezerwa</span><strong>{fmt_number(weakest["reserve_to_best"])} pkt</strong></div>
+            <div><span>Do najlepszego z zawodow</span><strong>{fmt_number(report["avg_event_pct"])}%</strong></div>
+          </div>
+          <p class="hint">Priorytet treningowy: {escape(weakest["label"])}. {escape(trend_text)}.</p>
+          <div class="disciplines">{details}</div>
+          <div class="event-refs">
+            <h3>Wynik wzgledem najlepszego rezultatu danych zawodow</h3>
+            {event_reference_rows}
+          </div>
+        </article>
+        """)
+
+    if not rows:
+        rows.append("""
+        <section class="empty">
+          <h2>Brak danych konkurencji</h2>
+          <p>Ukryty modul jest gotowy, ale arkusz startow musi zawierac kolumny: krag, os, mop, dzik, rogacz.</p>
+        </section>
+        """)
+
+    return f"""<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ukryta analiza slabszych konkurencji</title>
+  <style>
+    :root {{
+      --ink: #17212b;
+      --muted: #657280;
+      --line: #d9e1e8;
+      --surface: #ffffff;
+      --soft: #f5f7f9;
+      --brand: #0b5c7a;
+      --green: #1d7a50;
+      --gold: #b47716;
+      --danger: #a73d31;
+      --shadow: 0 12px 28px rgba(23, 33, 43, 0.08);
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+      letter-spacing: 0;
+    }}
+    header {{
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }}
+    .wrap {{
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }}
+    .hero {{
+      padding: 28px 0 22px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }}
+    h1 {{
+      margin: 0 0 8px;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.08;
+    }}
+    p {{ margin: 0; color: var(--muted); line-height: 1.45; }}
+    .secret {{
+      border: 1px solid rgba(167, 61, 49, .25);
+      background: rgba(167, 61, 49, .08);
+      color: var(--danger);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }}
+    main {{ padding: 22px 0 44px; }}
+    .grid {{
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }}
+    .player-card, .empty {{
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }}
+    .player-head {{
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }}
+    h2 {{ margin: 0 0 4px; font-size: 19px; }}
+    .weak-badge {{
+      min-width: 160px;
+      border: 1px solid rgba(180, 119, 22, .25);
+      background: rgba(180, 119, 22, .08);
+      border-radius: 8px;
+      padding: 9px 10px;
+      text-align: right;
+    }}
+    .weak-badge span, .summary span {{
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }}
+    .weak-badge strong {{ color: var(--gold); }}
+    .summary {{
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }}
+    .summary div {{
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+    }}
+    .summary strong {{ display: block; margin-top: 5px; font-size: 18px; }}
+    .hint {{
+      border-left: 3px solid var(--brand);
+      padding-left: 10px;
+      margin-bottom: 13px;
+      color: var(--ink);
+    }}
+    .disciplines {{ display: grid; gap: 8px; }}
+    .event-refs {{
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      gap: 8px;
+    }}
+    .event-refs h3 {{
+      margin: 0 0 2px;
+      font-size: 14px;
+    }}
+    .event-ref {{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 58px;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #edf1f4;
+      font-size: 13px;
+    }}
+    .event-ref:last-child {{ border-bottom: 0; }}
+    .event-ref span {{
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }}
+    .event-ref em {{
+      color: var(--brand);
+      font-style: normal;
+      font-weight: 800;
+      text-align: right;
+    }}
+    .muted-note {{
+      color: var(--muted);
+      font-size: 13px;
+    }}
+    .discipline {{
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) minmax(120px, .8fr) 46px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }}
+    .discipline span {{
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }}
+    .discipline em {{
+      color: var(--brand);
+      font-style: normal;
+      font-weight: 800;
+      text-align: right;
+    }}
+    .meter {{
+      height: 8px;
+      border-radius: 999px;
+      background: #e9eef2;
+      overflow: hidden;
+    }}
+    .meter i {{
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--danger), var(--gold), var(--green));
+    }}
+    @media (max-width: 900px) {{
+      .grid {{ grid-template-columns: 1fr; }}
+      .hero, .player-head {{ flex-direction: column; align-items: stretch; }}
+      .weak-badge {{ text-align: left; }}
+      .summary {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+      .discipline {{ grid-template-columns: 1fr; }}
+      .discipline em {{ text-align: left; }}
+    }}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>Ukryta analiza slabszych konkurencji</h1>
+        <p>Raport wskazuje, gdzie kazdy zawodnik traci najwiecej punktow i gdzie ma najwieksza rezerwe treningowa.</p>
+      </div>
+      <div class="secret">Modul ukryty</div>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="grid">
+      {"".join(rows)}
+    </div>
+  </main>
+</body>
+</html>
+"""
 
 
 def build_html(ranking, starts, events):
@@ -134,6 +547,9 @@ def build_html(ranking, starts, events):
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+      cursor: default;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }}
 
     .mark::before {{
@@ -588,7 +1004,7 @@ def build_html(ranking, starts, events):
         <h1>Ranking Białystok - półfinał ligi</h1>
         <p class="subhead">Okręg białostocki. Półfinał: wyniki od 16.05.2026 do 01.08.2026. Kwalifikacje mistrzostw: wyniki do 16.08.2026 włącznie.</p>
       </div>
-      <div class="mark" aria-hidden="true"></div>
+      <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"></div>
     </div>
   </header>
 
@@ -721,6 +1137,7 @@ def build_html(ranking, starts, events):
     const startsDirectionBtn = document.getElementById("startsDirectionBtn");
     const eventsSortSelect = document.getElementById("eventsSortSelect");
     const eventsDirectionBtn = document.getElementById("eventsDirectionBtn");
+    const secretAnalysisTrigger = document.getElementById("secretAnalysisTrigger");
     const panels = {{
       ranking: document.getElementById("panel-ranking"),
       starts: document.getElementById("panel-starts"),
@@ -733,6 +1150,31 @@ def build_html(ranking, starts, events):
     let startsSortDirection = "desc";
     let eventsSortKey = "data_zawodow";
     let eventsSortDirection = "asc";
+    let secretTapTimes = [];
+
+    function openSecretAnalysis() {{
+      window.location.href = "analiza-slabosci.html";
+    }}
+
+    function registerSecretTap() {{
+      const now = Date.now();
+      secretTapTimes = secretTapTimes.filter((time) => now - time < 4200);
+      secretTapTimes.push(now);
+      if (secretTapTimes.length >= 7) {{
+        secretTapTimes = [];
+        openSecretAnalysis();
+      }}
+    }}
+
+    if (secretAnalysisTrigger) {{
+      secretAnalysisTrigger.addEventListener("click", registerSecretTap);
+      secretAnalysisTrigger.addEventListener("keydown", (event) => {{
+        if (event.key === "Enter" || event.key === " ") {{
+          event.preventDefault();
+          registerSecretTap();
+        }}
+      }});
+    }}
 
     function text(value) {{
       return value === null || value === undefined || value === "" ? "" : String(value);
@@ -998,7 +1440,9 @@ def build_html(ranking, starts, events):
 def write_site(ranking, starts, events):
     OUTPUT_DIR.mkdir(exist_ok=True)
     OUTPUT_FILE.write_text(build_html(ranking, starts, events), encoding="utf-8")
+    HIDDEN_ANALYSIS_FILE.write_text(build_hidden_analysis_html(starts), encoding="utf-8")
     print("Zapisano stronę:", OUTPUT_FILE)
+    print("Zapisano ukryty moduł:", HIDDEN_ANALYSIS_FILE)
 
 
 def write_site_from_dataframes(ranking, starts, events):
