@@ -1,6 +1,7 @@
 import re
 import time
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 
@@ -13,6 +14,22 @@ DATA_DO_MISTRZOSTWA = date(2026, 8, 16)
 OKREG = "białystok"
 OUTPUT_FILE = "bialystok_polfinal.xlsx"
 EXPORT_EXCEL = False
+MANUAL_RESULTS = [
+    {
+        "path": Path("data/manual_results/mistrzostwa_okregu_2026.csv"),
+        "event": {
+            "rok": "2026",
+            "nr_tabeli_terminarza": "",
+            "lp_zawodow": "manual-2026-06-13",
+            "nazwa_zawodow": "Mistrzostwa okręgu białostockiego",
+            "zo_pzl_zawody": "Białystok",
+            "strzelnica": "",
+            "data_zawodow": "2026-06-13",
+            "url_wynikow": "manual:mistrzostwa-okregu-bialostockiego-2026",
+            "daty_rozpoznane": "2026-06-13",
+        },
+    },
+]
 
 
 def clean_text(text):
@@ -76,6 +93,54 @@ def filter_events_for_period(events: pd.DataFrame, data_do: date) -> pd.DataFram
     ].copy()
     events = events.sort_values(["data_zawodow", "nazwa_zawodow"]).reset_index(drop=True)
     return events
+
+
+def load_manual_results(results: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    if results.empty:
+        return pd.DataFrame(), pd.DataFrame()
+
+    existing_players = set(
+        results[
+            results["okreg"].astype(str).str.lower().str.strip() == OKREG
+        ]["zawodnik"].dropna().map(clean_text)
+    )
+
+    all_manual_results = []
+    all_manual_events = []
+
+    for manual in MANUAL_RESULTS:
+        path = manual["path"]
+        if not path.exists():
+            continue
+
+        event = manual["event"]
+        df = pd.read_csv(path)
+        df["zawodnik"] = df["zawodnik"].map(clean_text)
+        df = df[df["zawodnik"].isin(existing_players)].copy()
+
+        if df.empty:
+            continue
+
+        for col in ["krag", "mop", "os", "rogacz", "dzik", "razem"]:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+        df["okreg"] = "Białystok"
+        df["nr_tabeli"] = 2
+        df["rok"] = event["rok"]
+        df["nazwa_zawodow"] = event["nazwa_zawodow"]
+        df["data_zawodow"] = event["data_zawodow"]
+        df["strzelnica"] = event["strzelnica"]
+        df["url_wynikow"] = event["url_wynikow"]
+        all_manual_results.append(df)
+        all_manual_events.append(event)
+
+    if not all_manual_results:
+        return pd.DataFrame(), pd.DataFrame()
+
+    return (
+        pd.concat(all_manual_results, ignore_index=True),
+        pd.DataFrame(all_manual_events).drop_duplicates(subset=["url_wynikow"]),
+    )
 
 
 def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -297,6 +362,12 @@ def main():
         results = pd.concat(all_results, ignore_index=True)
     else:
         results = pd.DataFrame()
+
+    manual_results, manual_events = load_manual_results(results)
+    if not manual_results.empty:
+        print("Ręcznych wyników dodanych:", len(manual_results))
+        results = pd.concat([results, manual_results], ignore_index=True)
+        events_in_period = pd.concat([events_in_period, manual_events], ignore_index=True)
 
     ranking, starts = build_bialystok_polfinal_ranking(results)
     events_with_bialystok = filter_events_with_bialystok_starts(events_in_period, starts)
