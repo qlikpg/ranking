@@ -477,7 +477,7 @@ def build_html(ranking, starts, events):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ranking Białystok - półfinał ligi</title>
+  <title>Ranking Białystok - kwalifikacja do finału ligi</title>
   <style>
     :root {{
       color-scheme: light;
@@ -1001,8 +1001,8 @@ def build_html(ranking, starts, events):
   <header>
     <div class="topbar">
       <div>
-        <h1>Ranking Białystok - półfinał ligi</h1>
-        <p class="subhead">Okręg białostocki. Półfinał: wyniki od 16.05.2026 do 01.08.2026. Kwalifikacje mistrzostw: wyniki do 16.08.2026 włącznie.</p>
+        <h1>Ranking Białystok - kwalifikacja do finału ligi</h1>
+        <p class="subhead">Okręg białostocki. Kwalifikacja do finału: wyniki od 01.08.2026 do 09.09.2026 włącznie. Kwalifikacja do mistrzostw: wyniki od 16.05.2026 do 16.08.2026 włącznie.</p>
       </div>
       <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"></div>
     </div>
@@ -1010,7 +1010,7 @@ def build_html(ranking, starts, events):
 
   <main>
     <section class="stats" aria-label="Podsumowanie">
-      <div class="stat wide"><span>Półfinał TOP 6</span><ol class="team-list">{team_six_items}</ol></div>
+      <div class="stat wide"><span>Finał TOP 6</span><ol class="team-list">{team_six_items}</ol></div>
       <div class="stat">
         <span>Podsumowanie</span>
         <div class="summary-grid">
@@ -1041,7 +1041,7 @@ def build_html(ranking, starts, events):
               <th><button class="sort-btn" type="button" data-ranking-sort="zawodnik">Zawodnik</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia 3</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_5_najlepszych_polfinal">Średnia 5</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty półf.</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty</button></th>
               <th class="number">1</th>
               <th class="number">2</th>
               <th class="number">3</th>
@@ -1055,7 +1055,7 @@ def build_html(ranking, starts, events):
         </table>
       </div>
       <div class="legend" aria-label="Opis etykiet">
-        <div class="legend-item"><span class="badge">Półfinał</span><span>TOP 6 rankingu, liczone według sumy 3 najlepszych startów zawodnika w okresie 16.05.2026-01.08.2026.</span></div>
+        <div class="legend-item"><span class="badge">Finał</span><span>TOP 6 rankingu kwalifikuje się do finału. Ranking jest liczony według sumy 3 najlepszych startów zawodnika w okresie 01.08.2026-09.09.2026 włącznie.</span></div>
         <div class="legend-item"><span class="badge championship">Mistrzostwa</span><span>TOP 3 kwalifikacji mistrzostw, liczone według sumy 5 najlepszych startów zawodnika w okresie 16.05.2026-16.08.2026 włącznie.</span></div>
       </div>
       <div class="empty" id="rankingEmpty" hidden>Brak wyników dla podanego filtra.</div>
@@ -1235,7 +1235,7 @@ def build_html(ranking, starts, events):
         if (isTopSix) {{
           const badge = document.createElement("span");
           badge.className = "badge";
-          badge.textContent = "Półfinał";
+          badge.textContent = "Finał";
           rankWrap.appendChild(badge);
         }}
         if (isChampionship) {{

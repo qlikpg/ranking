@@ -8,8 +8,9 @@ import pandas as pd
 from ranking_pzlow_lata import pobierz_wyniki_zawodow, pobierz_zawody_z_wynikami
 
 
-DATA_OD = date(2026, 5, 16)
-DATA_DO_POLFINAL = date(2026, 8, 1)
+DATA_OD_FINAL = date(2026, 8, 1)
+DATA_DO_FINAL = date(2026, 9, 9)
+DATA_OD_MISTRZOSTWA = date(2026, 5, 16)
 DATA_DO_MISTRZOSTWA = date(2026, 8, 16)
 OKREG = "białystok"
 OUTPUT_FILE = "bialystok_polfinal.xlsx"
@@ -75,12 +76,12 @@ def parse_event_dates(text: str) -> list[date]:
     return parsed
 
 
-def event_in_date_range(data_zawodow: str, data_do: date) -> bool:
+def event_in_date_range(data_zawodow: str, data_od: date, data_do: date) -> bool:
     dates = parse_event_dates(data_zawodow)
-    return any(DATA_OD <= event_date <= data_do for event_date in dates)
+    return any(data_od <= event_date <= data_do for event_date in dates)
 
 
-def filter_events_for_period(events: pd.DataFrame, data_do: date) -> pd.DataFrame:
+def filter_events_for_period(events: pd.DataFrame, data_od: date, data_do: date) -> pd.DataFrame:
     if events.empty:
         return events
 
@@ -89,7 +90,7 @@ def filter_events_for_period(events: pd.DataFrame, data_do: date) -> pd.DataFram
         lambda value: ", ".join(d.isoformat() for d in parse_event_dates(value))
     )
     events = events[
-        events["data_zawodow"].apply(lambda value: event_in_date_range(value, data_do))
+        events["data_zawodow"].apply(lambda value: event_in_date_range(value, data_od, data_do))
     ].copy()
     events = events.sort_values(["data_zawodow", "nazwa_zawodow"]).reset_index(drop=True)
     return events
@@ -114,6 +115,10 @@ def load_manual_results(results: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFra
             continue
 
         event = manual["event"]
+        if not event_in_date_range(
+            event["data_zawodow"], DATA_OD_MISTRZOSTWA, DATA_DO_MISTRZOSTWA
+        ):
+            continue
         df = pd.read_csv(path)
         df["zawodnik"] = df["zawodnik"].map(clean_text)
         df = df[df["zawodnik"].isin(existing_players)].copy()
@@ -190,21 +195,23 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         ]
     ].reset_index(drop=True)
 
-    polfinal_starts = starts[
-        starts["data_zawodow"].apply(lambda value: event_in_date_range(value, DATA_DO_POLFINAL))
+    final_starts = starts[
+        starts["data_zawodow"].apply(
+            lambda value: event_in_date_range(value, DATA_OD_FINAL, DATA_DO_FINAL)
+        )
     ].copy()
-    polfinal_starts = polfinal_starts.sort_values(
+    final_starts = final_starts.sort_values(
         ["zawodnik", "wynik", "data_zawodow"],
         ascending=[True, False, True],
     )
-    polfinal_starts["nr_wyniku_zawodnika"] = (
-        polfinal_starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
+    final_starts["nr_wyniku_zawodnika"] = (
+        final_starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
     )
 
-    top5_polfinal = polfinal_starts[polfinal_starts["nr_wyniku_zawodnika"] <= 5].copy()
+    top5_final = final_starts[final_starts["nr_wyniku_zawodnika"] <= 5].copy()
 
     ranking = (
-        top5_polfinal
+        top5_final
         .groupby(["zawodnik", "okreg"], dropna=False)
         .agg(
             suma_3_najlepszych=("wynik", lambda x: sum(sorted(x, reverse=True)[:3])),
@@ -221,7 +228,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
     )
 
     all_starts = (
-        polfinal_starts
+        final_starts
         .groupby(["zawodnik", "okreg"], dropna=False)
         .agg(
             liczba_startow=("wynik", "count"),
@@ -238,14 +245,25 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         ranking["suma_5_najlepszych_polfinal"] / ranking["liczba_wynikow_do_rankingu"]
     ).round(2)
 
-    starts = starts.sort_values(
+    championship_starts = starts[
+        starts["data_zawodow"].apply(
+            lambda value: event_in_date_range(
+                value, DATA_OD_MISTRZOSTWA, DATA_DO_MISTRZOSTWA
+            )
+        )
+    ].copy()
+    championship_starts = championship_starts.sort_values(
         ["zawodnik", "wynik", "data_zawodow"],
         ascending=[True, False, True],
     )
-    starts["nr_wyniku_zawodnika"] = starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
-    top5 = starts[starts["nr_wyniku_zawodnika"] <= 5].copy()
+    championship_starts["nr_wyniku_mistrzostwa"] = (
+        championship_starts.groupby(["zawodnik", "okreg"]).cumcount() + 1
+    )
+    top5_championship = championship_starts[
+        championship_starts["nr_wyniku_mistrzostwa"] <= 5
+    ].copy()
     championship = (
-        top5
+        top5_championship
         .groupby(["zawodnik", "okreg"], dropna=False)
         .agg(
             suma_5_najlepszych=("wynik", "sum"),
@@ -255,7 +273,8 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         .reset_index()
     )
     championship["srednia_5_najlepszych"] = (
-        championship["suma_5_najlepszych"] / championship["liczba_wynikow_mistrzostwa"]
+        championship["suma_5_najlepszych"]
+        / championship["liczba_wynikow_mistrzostwa"]
     ).round(2)
     championship = championship.sort_values(
         ["suma_5_najlepszych", "najlepszy_wynik_mistrzostwa", "liczba_wynikow_mistrzostwa"],
@@ -283,11 +302,8 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         on=["zawodnik", "okreg"],
         how="outer",
     )
-
     ranking = ranking.sort_values(
-        ["miejsce", "miejsce_mistrzostwa"],
-        ascending=[True, True],
-        na_position="last",
+        ["miejsce", "miejsce_mistrzostwa"], ascending=[True, True], na_position="last"
     )
 
     ranking = ranking[
@@ -330,12 +346,14 @@ def main():
     events = pobierz_zawody_z_wynikami()
     print("Zawody z linkiem do wyników:", len(events))
 
-    events_in_period = filter_events_for_period(events, DATA_DO_MISTRZOSTWA)
+    events_in_period = filter_events_for_period(
+        events, min(DATA_OD_FINAL, DATA_OD_MISTRZOSTWA), max(DATA_DO_FINAL, DATA_DO_MISTRZOSTWA)
+    )
     print(
-        "Zawody w okresie kwalifikacji mistrzostw",
-        DATA_OD.strftime("%d.%m.%Y"),
+        "Zawody w okresie kwalifikacji do finału",
+        DATA_OD_FINAL.strftime("%d.%m.%Y"),
         "-",
-        DATA_DO_MISTRZOSTWA.strftime("%d.%m.%Y") + ":",
+        DATA_DO_FINAL.strftime("%d.%m.%Y") + ":",
         len(events_in_period),
     )
 
