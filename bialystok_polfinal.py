@@ -222,7 +222,9 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             najlepszy_3=("wynik", lambda x: sorted(x, reverse=True)[2] if len(x) >= 3 else None),
             najlepszy_4=("wynik", lambda x: sorted(x, reverse=True)[3] if len(x) >= 4 else None),
             najlepszy_5=("wynik", lambda x: sorted(x, reverse=True)[4] if len(x) >= 5 else None),
-            zawody_wliczone=("nazwa_zawodow", lambda x: " | ".join(map(str, x))),
+            zawody_wliczone=(
+                "nazwa_zawodow", lambda x: " | ".join(map(str, x.iloc[:3]))
+            ),
         )
         .reset_index()
     )

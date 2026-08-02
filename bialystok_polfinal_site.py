@@ -1048,7 +1048,7 @@ def build_html(ranking, starts, events):
               <th class="number">4</th>
               <th class="number">5</th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
-              <th>5 najlepszych zawodów</th>
+              <th>3 najlepsze zawody</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
@@ -1302,7 +1302,16 @@ def build_html(ranking, starts, events):
 
     function sortRanking(rows) {{
       const direction = rankingSortDirection === "asc" ? 1 : -1;
-      return [...rows].sort((a, b) => compareValues(a[rankingSortKey], b[rankingSortKey]) * direction);
+      return [...rows].sort((a, b) => {{
+        const left = a[rankingSortKey];
+        const right = b[rankingSortKey];
+        const leftMissing = left === "" || left === null || left === undefined;
+        const rightMissing = right === "" || right === null || right === undefined;
+        if (leftMissing && rightMissing) return 0;
+        if (leftMissing) return 1;
+        if (rightMissing) return -1;
+        return compareValues(left, right) * direction;
+      }});
     }}
 
     function updateRankingSortButtons() {{
