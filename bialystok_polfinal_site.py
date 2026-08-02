@@ -1040,6 +1040,7 @@ def build_html(ranking, starts, events):
               <th><button class="sort-btn" type="button" data-ranking-sort="miejsce">Miejsce</button></th>
               <th><button class="sort-btn" type="button" data-ranking-sort="zawodnik">Zawodnik</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia 3</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_5_najlepszych">Średnia 5 — mistrzostwa</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty finał</button></th>
               <th class="number">Finał 1</th>
               <th class="number">Finał 2</th>
@@ -1252,6 +1253,7 @@ def build_html(ranking, starts, events):
           rankCell,
           cell(row.zawodnik),
           cell(row.srednia_3_najlepszych, "number score"),
+          cell(row.srednia_5_najlepszych, "number score"),
           cell(row.liczba_startow, "number"),
           cell(row.najlepszy_1, "number"),
           cell(row.najlepszy_2, "number"),
