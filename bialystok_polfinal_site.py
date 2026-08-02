@@ -1048,7 +1048,8 @@ def build_html(ranking, starts, events):
               <th class="number">4</th>
               <th class="number">5</th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
-              <th>3 najlepsze zawody</th>
+              <th>3 najlepsze zawody — finał</th>
+              <th>5 najlepszych zawodów — mistrzostwa</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
@@ -1257,7 +1258,8 @@ def build_html(ranking, starts, events):
           cell(row.najlepszy_4, "number"),
           cell(row.najlepszy_5, "number"),
           cell(row.miejsce_mistrzostwa, "number"),
-          eventsCell(row.zawody_wliczone)
+          eventsCell(row.zawody_wliczone),
+          eventsCell(row.zawody_wliczone_mistrzostwa)
         );
         body.appendChild(tr);
       }});
@@ -1367,7 +1369,7 @@ def build_html(ranking, starts, events):
 
     function render() {{
       const query = search.value.trim().toLocaleLowerCase("pl");
-      renderRanking(sortRanking(ranking.filter((row) => includesQuery(row, ["zawodnik", "zawody_wliczone", "wszystkie_starty"], query))));
+      renderRanking(sortRanking(ranking.filter((row) => includesQuery(row, ["zawodnik", "zawody_wliczone", "zawody_wliczone_mistrzostwa", "wszystkie_starty"], query))));
       renderStarts(sortStarts(starts.filter((row) => includesQuery(row, ["zawodnik", "nazwa_zawodow", "data_zawodow"], query))));
       renderEvents(sortEvents(events.filter((row) => includesQuery(row, ["nazwa_zawodow", "zo_pzl_zawody", "data_zawodow"], query))));
       updateRankingSortButtons();

@@ -271,6 +271,9 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             suma_5_najlepszych=("wynik", "sum"),
             liczba_wynikow_mistrzostwa=("wynik", "count"),
             najlepszy_wynik_mistrzostwa=("wynik", "max"),
+            zawody_wliczone_mistrzostwa=(
+                "nazwa_zawodow", lambda x: " | ".join(map(str, x))
+            ),
         )
         .reset_index()
     )
@@ -299,6 +302,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
                 "suma_5_najlepszych",
                 "srednia_5_najlepszych",
                 "liczba_wynikow_mistrzostwa",
+                "zawody_wliczone_mistrzostwa",
             ]
         ],
         on=["zawodnik", "okreg"],
@@ -328,6 +332,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             "srednia_5_najlepszych",
             "liczba_wynikow_mistrzostwa",
             "zawody_wliczone",
+            "zawody_wliczone_mistrzostwa",
             "wszystkie_starty",
         ]
     ]
