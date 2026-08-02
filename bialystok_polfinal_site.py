@@ -1040,15 +1040,17 @@ def build_html(ranking, starts, events):
               <th><button class="sort-btn" type="button" data-ranking-sort="miejsce">Miejsce</button></th>
               <th><button class="sort-btn" type="button" data-ranking-sort="zawodnik">Zawodnik</button></th>
               <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia 3</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_5_najlepszych_polfinal">Średnia 5</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty</button></th>
-              <th class="number">1</th>
-              <th class="number">2</th>
-              <th class="number">3</th>
-              <th class="number">4</th>
-              <th class="number">5</th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty finał</button></th>
+              <th class="number">Finał 1</th>
+              <th class="number">Finał 2</th>
+              <th class="number">Finał 3</th>
               <th>3 najlepsze zawody — finał</th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
+              <th class="number">Mistrz. 1</th>
+              <th class="number">Mistrz. 2</th>
+              <th class="number">Mistrz. 3</th>
+              <th class="number">Mistrz. 4</th>
+              <th class="number">Mistrz. 5</th>
               <th>5 najlepszych zawodów — mistrzostwa</th>
             </tr>
           </thead>
@@ -1250,15 +1252,17 @@ def build_html(ranking, starts, events):
           rankCell,
           cell(row.zawodnik),
           cell(row.srednia_3_najlepszych, "number score"),
-          cell(row.srednia_5_najlepszych_polfinal, "number score"),
           cell(row.liczba_startow, "number"),
           cell(row.najlepszy_1, "number"),
           cell(row.najlepszy_2, "number"),
           cell(row.najlepszy_3, "number"),
-          cell(row.najlepszy_4, "number"),
-          cell(row.najlepszy_5, "number"),
-          cell(row.miejsce_mistrzostwa, "number"),
           eventsCell(row.zawody_wliczone),
+          cell(row.miejsce_mistrzostwa, "number"),
+          cell(row.mistrzostwa_najlepszy_1, "number"),
+          cell(row.mistrzostwa_najlepszy_2, "number"),
+          cell(row.mistrzostwa_najlepszy_3, "number"),
+          cell(row.mistrzostwa_najlepszy_4, "number"),
+          cell(row.mistrzostwa_najlepszy_5, "number"),
           eventsCell(row.zawody_wliczone_mistrzostwa)
         );
         body.appendChild(tr);

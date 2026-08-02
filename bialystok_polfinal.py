@@ -271,6 +271,21 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             suma_5_najlepszych=("wynik", "sum"),
             liczba_wynikow_mistrzostwa=("wynik", "count"),
             najlepszy_wynik_mistrzostwa=("wynik", "max"),
+            mistrzostwa_najlepszy_1=(
+                "wynik", lambda x: sorted(x, reverse=True)[0] if len(x) >= 1 else None
+            ),
+            mistrzostwa_najlepszy_2=(
+                "wynik", lambda x: sorted(x, reverse=True)[1] if len(x) >= 2 else None
+            ),
+            mistrzostwa_najlepszy_3=(
+                "wynik", lambda x: sorted(x, reverse=True)[2] if len(x) >= 3 else None
+            ),
+            mistrzostwa_najlepszy_4=(
+                "wynik", lambda x: sorted(x, reverse=True)[3] if len(x) >= 4 else None
+            ),
+            mistrzostwa_najlepszy_5=(
+                "wynik", lambda x: sorted(x, reverse=True)[4] if len(x) >= 5 else None
+            ),
             zawody_wliczone_mistrzostwa=(
                 "nazwa_zawodow", lambda x: " | ".join(map(str, x))
             ),
@@ -302,6 +317,11 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
                 "suma_5_najlepszych",
                 "srednia_5_najlepszych",
                 "liczba_wynikow_mistrzostwa",
+                "mistrzostwa_najlepszy_1",
+                "mistrzostwa_najlepszy_2",
+                "mistrzostwa_najlepszy_3",
+                "mistrzostwa_najlepszy_4",
+                "mistrzostwa_najlepszy_5",
                 "zawody_wliczone_mistrzostwa",
             ]
         ],
@@ -331,6 +351,11 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             "suma_5_najlepszych",
             "srednia_5_najlepszych",
             "liczba_wynikow_mistrzostwa",
+            "mistrzostwa_najlepszy_1",
+            "mistrzostwa_najlepszy_2",
+            "mistrzostwa_najlepszy_3",
+            "mistrzostwa_najlepszy_4",
+            "mistrzostwa_najlepszy_5",
             "zawody_wliczone",
             "zawody_wliczone_mistrzostwa",
             "wszystkie_starty",
