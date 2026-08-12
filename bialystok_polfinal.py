@@ -30,6 +30,20 @@ MANUAL_RESULTS = [
             "daty_rozpoznane": "2026-06-13",
         },
     },
+    {
+        "path": Path("data/manual_results/zloty_laur_jabloni_2026.csv"),
+        "event": {
+            "rok": "2026",
+            "nr_tabeli_terminarza": "",
+            "lp_zawodow": "manual-2026-08-08",
+            "nazwa_zawodow": "I Złoty Laur Jabłoni",
+            "zo_pzl_zawody": "",
+            "strzelnica": "Jabłoń",
+            "data_zawodow": "2026-08-08",
+            "url_wynikow": "https://www.pzlow.pl/wp-content/uploads/2026/08/Zloty-Laur-Jabloni.pdf",
+            "daty_rozpoznane": "2026-08-08",
+        },
+    },
 ]
 
 
@@ -417,7 +431,11 @@ def main():
     if not manual_results.empty:
         print("Ręcznych wyników dodanych:", len(manual_results))
         results = pd.concat([results, manual_results], ignore_index=True)
-        events_in_period = pd.concat([events_in_period, manual_events], ignore_index=True)
+        events_in_period = (
+            pd.concat([events_in_period, manual_events], ignore_index=True)
+            .drop_duplicates(subset=["url_wynikow"], keep="first")
+            .reset_index(drop=True)
+        )
 
     ranking, starts = build_bialystok_polfinal_ranking(results)
     events_with_bialystok = filter_events_with_bialystok_starts(events_in_period, starts)
