@@ -125,8 +125,11 @@ def normalize_result_table(df):
     return df
 
 
-def pobierz_zawody_z_wynikami():
-    soup = BeautifulSoup(fetch_html(TERMINARZ_URL), "html.parser")
+def pobierz_zawody_z_wynikami(*, refresh=False):
+    url = TERMINARZ_URL
+    if refresh:
+        url += f"?ranking_refresh={time.time_ns()}"
+    soup = BeautifulSoup(fetch_html(url), "html.parser")
 
     wyniki = []
     tables = soup.find_all("table")

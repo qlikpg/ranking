@@ -395,9 +395,18 @@ def main():
     events_in_period = filter_events_for_period(
         events, min(DATA_OD_FINAL, DATA_OD_MISTRZOSTWA), max(DATA_DO_FINAL, DATA_DO_MISTRZOSTWA)
     )
+    if events_in_period.empty:
+        print("Brak zawodów w okresie. Ponawiam pobranie terminarza bez cache.")
+        print("Przykładowe pobrane daty:", events.get("data_zawodow", pd.Series(dtype=str)).head(10).tolist())
+        events = pobierz_zawody_z_wynikami(refresh=True)
+        events_in_period = filter_events_for_period(
+            events, min(DATA_OD_FINAL, DATA_OD_MISTRZOSTWA), max(DATA_DO_FINAL, DATA_DO_MISTRZOSTWA)
+        )
+    if events_in_period.empty:
+        raise RuntimeError("Brak zawodów w okresie kwalifikacji. Publikacja wstrzymana; zachowano poprzednią stronę.")
     print(
-        "Zawody w okresie kwalifikacji do finału",
-        DATA_OD_FINAL.strftime("%d.%m.%Y"),
+        "Zawody w okresie pobierania wyników",
+        min(DATA_OD_FINAL, DATA_OD_MISTRZOSTWA).strftime("%d.%m.%Y"),
         "-",
         DATA_DO_FINAL.strftime("%d.%m.%Y") + ":",
         len(events_in_period),
@@ -445,12 +454,12 @@ def main():
     print("Zawodników w rankingu:", len(ranking))
     print("Zawody z zawodnikami z Białegostoku:", len(events_with_bialystok))
 
-    try:
-        from bialystok_polfinal_site import write_site_from_dataframes
+    if ranking.empty or starts.empty or events_with_bialystok.empty:
+        raise RuntimeError("Puste dane rankingu. Publikacja wstrzymana; zachowano poprzednią stronę.")
 
-        write_site_from_dataframes(ranking, starts, events_with_bialystok)
-    except Exception as error:
-        print("Nie udało się zbudować strony:", error)
+    from bialystok_polfinal_site import write_site_from_dataframes
+
+    write_site_from_dataframes(ranking, starts, events_with_bialystok)
 
     if EXPORT_EXCEL:
         with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
