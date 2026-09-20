@@ -17,20 +17,6 @@ OUTPUT_FILE = "bialystok_polfinal.xlsx"
 EXPORT_EXCEL = False
 MANUAL_RESULTS = [
     {
-        "path": Path("data/manual_results/mistrzostwa_okregu_2026.csv"),
-        "event": {
-            "rok": "2026",
-            "nr_tabeli_terminarza": "",
-            "lp_zawodow": "manual-2026-06-13",
-            "nazwa_zawodow": "Mistrzostwa okręgu białostockiego",
-            "zo_pzl_zawody": "Białystok",
-            "strzelnica": "",
-            "data_zawodow": "2026-06-13",
-            "url_wynikow": "manual:mistrzostwa-okregu-bialostockiego-2026",
-            "daty_rozpoznane": "2026-06-13",
-        },
-    },
-    {
         "path": Path("data/manual_results/zloty_laur_jabloni_2026.csv"),
         "event": {
             "rok": "2026",
@@ -167,6 +153,10 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         return pd.DataFrame(), pd.DataFrame()
 
     df = results.copy()
+    # Mistrzostwa okręgu nie są uwzględniane w klasyfikacji sezonu.
+    df = df[~df["nazwa_zawodow"].map(clean_text).str.casefold().eq(
+        "mistrzostwa okręgu białostockiego"
+    )].copy()
     df = df[df["data_zawodow"].apply(
         lambda value: event_in_date_range(value, DATA_OD_FINAL, DATA_DO_FINAL)
     )].copy()

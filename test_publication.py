@@ -26,6 +26,7 @@ class PublicationTests(unittest.TestCase):
                     nazwa_zawodow=f"Zawody {i}", data_zawodow=["2026-02-01", "2026-06-01", "2026-08-10", "2026-09-19"][i],
                     klasa="M", strzelnica="", url_wynikow=f"event:{i}"))
         rows.append(dict(rows[0], razem=500, nazwa_zawodow="Poprzedni sezon", data_zawodow="2025-12-31"))
+        rows.append(dict(rows[0], razem=500, nazwa_zawodow="Mistrzostwa okręgu białostockiego", data_zawodow="2026-06-13"))
         result, starts = ranking.build_bialystok_polfinal_ranking(pd.DataFrame(rows))
         self.assertEqual(result["zawodnik"].tolist(), ["A", "B"])
         self.assertEqual(result["suma_3_najlepszych"].tolist(), [900, 450])
