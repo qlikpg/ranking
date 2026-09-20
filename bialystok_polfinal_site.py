@@ -466,7 +466,7 @@ def build_html(ranking, starts, events):
     total_starts = sum(int(row.get("liczba_startow") or 0) for row in ranking)
     team_six = ranking[:6]
     team_six_items = "\n".join(
-        f"<li><span>{escape(str(row['zawodnik']))}</span><strong>{escape(str(row['srednia_3_najlepszych']))}</strong></li>"
+        f"<li><span>{escape(str(row['zawodnik']))}</span><strong>{escape(str(row['suma_3_najlepszych']))}</strong></li>"
         for row in team_six
     )
     if not team_six_items:
@@ -477,7 +477,7 @@ def build_html(ranking, starts, events):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ranking Białystok - kwalifikacja do finału ligi</title>
+  <title>Ranking Białystok — klasyfikacja końcowa 2026</title>
   <style>
     :root {{
       color-scheme: light;
@@ -1001,8 +1001,8 @@ def build_html(ranking, starts, events):
   <header>
     <div class="topbar">
       <div>
-        <h1>Ranking Białystok - kwalifikacja do finału ligi</h1>
-        <p class="subhead">Okręg białostocki. Kwalifikacja do finału: wyniki od 01.08.2026 do 09.09.2026 włącznie. Kwalifikacja do mistrzostw: wyniki od 16.05.2026 do 16.08.2026 włącznie.</p>
+        <h1>Ranking Białystok — klasyfikacja końcowa 2026</h1>
+        <p class="subhead">Sezon 2026 · Okręg białostocki. Klasyfikacja według sumy trzech najlepszych wyników z całego sezonu.</p>
       </div>
       <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"></div>
     </div>
@@ -1010,7 +1010,7 @@ def build_html(ranking, starts, events):
 
   <main>
     <section class="stats" aria-label="Podsumowanie">
-      <div class="stat wide"><span>Finał TOP 6</span><ol class="team-list">{team_six_items}</ol></div>
+      <div class="stat wide"><span>Czołówka sezonu · suma 3</span><ol class="team-list">{team_six_items}</ol></div>
       <div class="stat">
         <span>Podsumowanie</span>
         <div class="summary-grid">
@@ -1028,7 +1028,7 @@ def build_html(ranking, starts, events):
         <button class="tab" type="button" data-panel="starts" aria-selected="false">Wyniki</button>
         <button class="tab" type="button" data-panel="events" aria-selected="false">Zawody</button>
       </div>
-      <a class="action secondary" href="zasady.pdf" target="_blank" rel="noreferrer">Zasady</a>
+      <a class="action secondary" href="#zasady-rankingu">Zasady rankingu</a>
       <button class="action" type="button" id="printBtn">Drukuj</button>
     </section>
 
@@ -1039,28 +1039,19 @@ def build_html(ranking, starts, events):
             <tr>
               <th><button class="sort-btn" type="button" data-ranking-sort="miejsce">Miejsce</button></th>
               <th><button class="sort-btn" type="button" data-ranking-sort="zawodnik">Zawodnik</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_3_najlepszych">Średnia 3</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="srednia_5_najlepszych">Średnia 5 — mistrzostwa</button></th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty finał</button></th>
-              <th class="number">Finał 1</th>
-              <th class="number">Finał 2</th>
-              <th class="number">Finał 3</th>
-              <th>3 najlepsze zawody — finał</th>
-              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="miejsce_mistrzostwa">Kwalifikacja mistrzostwa</button></th>
-              <th class="number">Mistrz. 1</th>
-              <th class="number">Mistrz. 2</th>
-              <th class="number">Mistrz. 3</th>
-              <th class="number">Mistrz. 4</th>
-              <th class="number">Mistrz. 5</th>
-              <th>5 najlepszych zawodów — mistrzostwa</th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="suma_3_najlepszych">Suma 3</button></th>
+              <th class="number"><button class="sort-btn number" type="button" data-ranking-sort="liczba_startow">Starty w sezonie</button></th>
+              <th class="number">Wynik 1</th>
+              <th class="number">Wynik 2</th>
+              <th class="number">Wynik 3</th>
+              <th>3 najlepsze zawody</th>
             </tr>
           </thead>
           <tbody id="rankingBody"></tbody>
         </table>
       </div>
-      <div class="legend" aria-label="Opis etykiet">
-        <div class="legend-item"><span class="badge">Finał</span><span>TOP 6 rankingu kwalifikuje się do finału. Ranking jest liczony według sumy 3 najlepszych startów zawodnika w okresie 01.08.2026-09.09.2026 włącznie.</span></div>
-        <div class="legend-item"><span class="badge championship">Mistrzostwa</span><span>TOP 3 kwalifikacji mistrzostw, liczone według sumy 5 najlepszych startów zawodnika w okresie 16.05.2026-16.08.2026 włącznie.</span></div>
+      <div class="legend" id="zasady-rankingu" aria-label="Zasady rankingu">
+        <div class="legend-item"><span class="badge">Sezon 2026</span><span>Ranking obejmuje cały sezon 2026 (01.01–31.12). Liczy się suma 3 najlepszych wyników z różnych zawodów. Przy mniej niż 3 startach sumowane są dostępne wyniki. Przy równej sumie decyduje najlepszy pojedynczy wynik, następnie liczba startów.</span></div>
       </div>
       <div class="empty" id="rankingEmpty" hidden>Brak wyników dla podanego filtra.</div>
     </section>
@@ -1226,9 +1217,6 @@ def build_html(ranking, starts, events):
       body.replaceChildren();
       rows.forEach((row) => {{
         const tr = document.createElement("tr");
-        const isTopSix = row.miejsce !== "" && Number(row.miejsce) <= 6;
-        const isChampionship = row.miejsce_mistrzostwa !== "" && Number(row.miejsce_mistrzostwa) <= 3;
-        if (isTopSix) tr.className = "top-six";
         const rankCell = document.createElement("td");
         const rankWrap = document.createElement("span");
         rankWrap.className = "rank-wrap";
@@ -1236,36 +1224,16 @@ def build_html(ranking, starts, events):
         rank.className = "rank";
         rank.textContent = row.miejsce;
         rankWrap.appendChild(rank);
-        if (isTopSix) {{
-          const badge = document.createElement("span");
-          badge.className = "badge";
-          badge.textContent = "Finał";
-          rankWrap.appendChild(badge);
-        }}
-        if (isChampionship) {{
-          const championshipBadge = document.createElement("span");
-          championshipBadge.className = "badge championship";
-          championshipBadge.textContent = "Mistrzostwa";
-          rankWrap.appendChild(championshipBadge);
-        }}
         rankCell.appendChild(rankWrap);
         tr.append(
           rankCell,
           cell(row.zawodnik),
-          cell(row.srednia_3_najlepszych, "number score"),
-          cell(row.srednia_5_najlepszych, "number score"),
+          cell(row.suma_3_najlepszych, "number score"),
           cell(row.liczba_startow, "number"),
           cell(row.najlepszy_1, "number"),
           cell(row.najlepszy_2, "number"),
           cell(row.najlepszy_3, "number"),
           eventsCell(row.zawody_wliczone),
-          cell(row.miejsce_mistrzostwa, "number"),
-          cell(row.mistrzostwa_najlepszy_1, "number"),
-          cell(row.mistrzostwa_najlepszy_2, "number"),
-          cell(row.mistrzostwa_najlepszy_3, "number"),
-          cell(row.mistrzostwa_najlepszy_4, "number"),
-          cell(row.mistrzostwa_najlepszy_5, "number"),
-          eventsCell(row.zawody_wliczone_mistrzostwa)
         );
         body.appendChild(tr);
       }});
@@ -1375,7 +1343,7 @@ def build_html(ranking, starts, events):
 
     function render() {{
       const query = search.value.trim().toLocaleLowerCase("pl");
-      renderRanking(sortRanking(ranking.filter((row) => includesQuery(row, ["zawodnik", "zawody_wliczone", "zawody_wliczone_mistrzostwa", "wszystkie_starty"], query))));
+      renderRanking(sortRanking(ranking.filter((row) => includesQuery(row, ["zawodnik", "zawody_wliczone", "wszystkie_starty"], query))));
       renderStarts(sortStarts(starts.filter((row) => includesQuery(row, ["zawodnik", "nazwa_zawodow", "data_zawodow"], query))));
       renderEvents(sortEvents(events.filter((row) => includesQuery(row, ["nazwa_zawodow", "zo_pzl_zawody", "data_zawodow"], query))));
       updateRankingSortButtons();

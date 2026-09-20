@@ -8,8 +8,8 @@ import pandas as pd
 from ranking_pzlow_lata import pobierz_wyniki_zawodow, pobierz_zawody_z_wynikami
 
 
-DATA_OD_FINAL = date(2026, 8, 1)
-DATA_DO_FINAL = date(2026, 9, 9)
+DATA_OD_FINAL = date(2026, 1, 1)
+DATA_DO_FINAL = date(2026, 12, 31)
 DATA_OD_MISTRZOSTWA = date(2026, 5, 16)
 DATA_DO_MISTRZOSTWA = date(2026, 8, 16)
 OKREG = "białystok"
@@ -167,6 +167,9 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         return pd.DataFrame(), pd.DataFrame()
 
     df = results.copy()
+    df = df[df["data_zawodow"].apply(
+        lambda value: event_in_date_range(value, DATA_OD_FINAL, DATA_DO_FINAL)
+    )].copy()
     df = df[df["razem"].notna()].copy()
     event_best_scores = (
         df[df["razem"] > 0]
