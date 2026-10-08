@@ -2,6 +2,7 @@
 <html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Historia wyników zawodników</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#edf2f6;color:#173047;font:16px system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 18px}a{color:#126580}h1{margin-bottom:8px}.note{color:#526675}.card{background:white;border:1px solid #d8e2ea;border-radius:16px;padding:20px;margin:20px 0}.filters{display:flex;gap:16px;flex-wrap:wrap}label{display:grid;gap:6px;flex:1;min-width:170px}select,input{font:inherit;padding:10px;border:1px solid #aebfcd;border-radius:8px;width:100%;background:white}svg{width:100%;height:auto;min-width:600px}.chart{overflow-x:auto}#summary{font-weight:600;margin:20px 0}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:12px;border-bottom:1px solid #e0e8ed}th{background:#f5f8fa}.table{overflow:auto}circle{cursor:pointer}circle:focus{stroke:#173047;stroke-width:4}#empty{padding:30px;text-align:center}[hidden]{display:none!important}
+.tooltip{position:fixed;z-index:10;max-width:min(340px,calc(100vw - 24px));padding:10px 14px;background:#173047;color:white;border-radius:8px;box-shadow:0 4px 16px #0003;font-size:14px;line-height:1.5;pointer-events:none;white-space:pre-line}
 </style></head><body><main>
 <a href="analiza-slabosci.html">← Analiza słabości</a> · <a href="index.html">Ranking</a>
 <h1>Historia wyników zawodników</h1><p class="note">Ukryty moduł · Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
@@ -16,6 +17,7 @@
 <p id="detail" aria-live="polite"></p>
 <p class="note">Najedź na punkt lub wybierz go klawiszem Tab, aby zobaczyć szczegóły. Pełne wyniki znajdują się w tabeli poniżej.</p>
 <div class="table"><table><thead><tr><th>Data</th><th>Zawody</th><th>Wynik (pkt)</th><th>Średnia zawodów (pkt)</th><th>Liczba wyników w średniej</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
 __DATA__
 <script>
 const starts=JSON.parse(document.getElementById('history-data').textContent);
@@ -30,7 +32,26 @@ function eventAverages(key){
  for(const r of starts){const value=r.srednie_zawodow?.[key];if(value&&Number.isFinite(value.mean)&&value.count>0)groups.set(eventKey(r),value);}
  return groups;
 }
+const tooltip=document.getElementById('tooltip');
+function positionTooltip(event,point){
+ const rect=point.getBoundingClientRect();
+ const left=event.clientX===undefined?rect.right:event.clientX;
+ const top=event.clientY===undefined?rect.top:event.clientY;
+ const box=tooltip.getBoundingClientRect();
+ tooltip.style.left=Math.max(12,Math.min(left+14,window.innerWidth-box.width-12))+'px';
+ tooltip.style.top=Math.max(12,Math.min(top+14,window.innerHeight-box.height-12))+'px';
+}
+function bindTooltip(point,detail){
+ point.setAttribute('aria-describedby','tooltip');
+ for(const event of ['mouseenter','focus','click'])point.addEventListener(event,e=>{tooltip.textContent=detail;tooltip.hidden=false;positionTooltip(e,point);document.getElementById('detail').textContent=detail;});
+ point.addEventListener('mousemove',e=>positionTooltip(e,point));
+ for(const event of ['mouseleave','blur'])point.addEventListener(event,()=>{tooltip.hidden=true;});
+}
+window.addEventListener('scroll',()=>{tooltip.hidden=true;},true);
+window.addEventListener('resize',()=>{tooltip.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')tooltip.hidden=true;});
 function render(){
+ tooltip.hidden=true;
 const averages=eventAverages(metric.value);
 const data=starts.filter(r=>r.zawodnik===player.value).map(r=>({r,date:dateValue(r.data_zawodow),score:r[metric.value]===''||r[metric.value]==null?NaN:Number(r[metric.value])})).filter(p=>p.date&&Number.isFinite(p.score)&&p.score>0&&(!from.value||p.date.s>=from.value)&&(!to.value||p.date.s<=to.value)).sort((a,b)=>a.date.t-b.date.t||String(a.r.nazwa_zawodow).localeCompare(String(b.r.nazwa_zawodow),'pl'));
 for(const p of data)p.average=averages.get(eventKey(p.r));
@@ -47,9 +68,9 @@ for(const p of ticks)svg('text',{x:x(p),y:365,'text-anchor':'middle',fill:'#5266
 const reference=data.filter(p=>p.average);
 let segment=[];function drawAverage(){if(segment.length)svg('polyline',{points:segment.join(' '),fill:'none',stroke:'#c46b19','stroke-width':3,'stroke-dasharray':'7 5','data-series':'average'});segment=[];}
 for(const p of data){if(p.average)segment.push(`${x(p)},${y(p.average.mean)}`);else drawAverage();}drawAverage();
-for(const p of reference){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`;const c=svg('circle',{cx:x(p),cy:y(p.average.mean),r:5,fill:'#c46b19',tabindex:0,'aria-label':detail,'data-series':'average'});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);for(const event of ['focus','mouseenter','click'])c.addEventListener(event,()=>{document.getElementById('detail').textContent=detail;});}
+for(const p of reference){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`;const c=svg('circle',{cx:x(p),cy:y(p.average.mean),r:5,fill:'#c46b19',tabindex:0,'aria-label':detail,'data-series':'average'});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
 svg('polyline',{points:data.map(p=>`${x(p)},${y(p.score)}`).join(' '),fill:'none',stroke:'#167d98','stroke-width':3});
-for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt${p.average?` · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`:''}`;const c=svg('circle',{cx:x(p),cy:y(p.score),'data-series':'player',r:6,fill:'#167d98',stroke:'white','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);for(const event of ['focus','mouseenter','click'])c.addEventListener(event,()=>{document.getElementById('detail').textContent=detail;});}
+for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt${p.average?` · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`:''}`;const c=svg('circle',{cx:x(p),cy:y(p.score),'data-series':'player',r:6,fill:'#167d98',stroke:'white','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
 }
 for(const el of [player,metric,from,to])el.addEventListener('change',render);render();
 </script></main></body></html>
