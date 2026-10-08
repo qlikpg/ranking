@@ -2,37 +2,122 @@
   {
     "nazwa_zawodow": "IV Puchar Prezesa NRŁ i Kapelana Krajowego PZŁ",
     "data_zawodow": "2026-06-27",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "LVIII Mistrzostwa PZŁ w kl. powszechnej (dwudniowe)",
-    "data_zawodow": "2026-07-25",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 402.3837209302326,
+        "count": 86
+      },
+      "krag": {
+        "mean": 81.9186046511628,
+        "count": 86
+      },
+      "os": {
+        "mean": 71.97674418604652,
+        "count": 86
+      },
+      "mop": {
+        "mean": 79.01162790697674,
+        "count": 86
+      },
+      "dzik": {
+        "mean": 79.68235294117648,
+        "count": 85
+      },
+      "rogacz": {
+        "mean": 90.72093023255815,
+        "count": 86
+      }
+    }
   },
   {
     "nazwa_zawodow": "XIV Puchar Podlasia",
     "data_zawodow": "2026-05-30",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 407.5882352941176,
+        "count": 85
+      },
+      "krag": {
+        "mean": 75.0,
+        "count": 85
+      },
+      "os": {
+        "mean": 73.76470588235294,
+        "count": 85
+      },
+      "mop": {
+        "mean": 85.17647058823529,
+        "count": 85
+      },
+      "dzik": {
+        "mean": 79.84705882352941,
+        "count": 85
+      },
+      "rogacz": {
+        "mean": 93.8,
+        "count": 85
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "LVIII Mistrzostwa PZŁ w kl. powszechnej (dwudniowe)",
+    "data_zawodow": "2026-07-25",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 397.97163120567376,
+        "count": 141
+      },
+      "krag": {
+        "mean": 76.24113475177305,
+        "count": 141
+      },
+      "os": {
+        "mean": 73.14285714285714,
+        "count": 140
+      },
+      "mop": {
+        "mean": 82.78571428571429,
+        "count": 140
+      },
+      "dzik": {
+        "mean": 76.76595744680851,
+        "count": 141
+      },
+      "rogacz": {
+        "mean": 90.1418439716312,
+        "count": 141
+      }
+    }
   },
   {
     "nazwa_zawodow": "IV Puchar Prezesa MCM Giżycko",
     "data_zawodow": "2026-06-06",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "XXXIV Puchar Prezydenta Olsztyna",
-    "data_zawodow": "2026-08-29",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "IX Warszawski Puchar Benelli",
-    "data_zawodow": "2026-08-30",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "I Puchar Kujaw i Ziemi Dobrzyńskiej",
-    "data_zawodow": "2026-08-15",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 384.0,
+        "count": 84
+      },
+      "krag": {
+        "mean": 74.33734939759036,
+        "count": 83
+      },
+      "os": {
+        "mean": 70.11904761904762,
+        "count": 84
+      },
+      "mop": {
+        "mean": 73.86904761904762,
+        "count": 84
+      },
+      "dzik": {
+        "mean": 77.12048192771084,
+        "count": 83
+      },
+      "rogacz": {
+        "mean": 91.44578313253012,
+        "count": 83
+      }
+    }
   },
   {
     "nazwa_zawodow": "I Złoty Laur Jabłoni",
@@ -40,133 +125,869 @@
     "srednie_zawodow": {}
   },
   {
+    "nazwa_zawodow": "XXXIV Puchar Prezydenta Olsztyna",
+    "data_zawodow": "2026-08-29",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 395.32978723404256,
+        "count": 94
+      },
+      "krag": {
+        "mean": 75.27173913043478,
+        "count": 92
+      },
+      "os": {
+        "mean": 70.10752688172043,
+        "count": 93
+      },
+      "mop": {
+        "mean": 83.11827956989248,
+        "count": 93
+      },
+      "dzik": {
+        "mean": 79.01063829787235,
+        "count": 94
+      },
+      "rogacz": {
+        "mean": 93.03260869565217,
+        "count": 92
+      }
+    }
+  },
+  {
     "nazwa_zawodow": "VI Finał Ligi Strzeleckiej",
     "data_zawodow": "2026-09-13",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 432.6752136752137,
+        "count": 117
+      },
+      "krag": {
+        "mean": 84.61538461538461,
+        "count": 117
+      },
+      "os": {
+        "mean": 80.0,
+        "count": 117
+      },
+      "mop": {
+        "mean": 89.23076923076923,
+        "count": 117
+      },
+      "dzik": {
+        "mean": 83.7008547008547,
+        "count": 117
+      },
+      "rogacz": {
+        "mean": 95.94827586206897,
+        "count": 116
+      }
+    }
   },
   {
-    "nazwa_zawodow": "Liga Strzelecka - Eliminacje Reg III",
-    "data_zawodow": "2026-05-16",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "IX Warszawski Puchar Benelli",
+    "data_zawodow": "2026-08-30",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 427.9146341463415,
+        "count": 82
+      },
+      "krag": {
+        "mean": 83.70370370370371,
+        "count": 81
+      },
+      "os": {
+        "mean": 82.07317073170732,
+        "count": 82
+      },
+      "mop": {
+        "mean": 87.7439024390244,
+        "count": 82
+      },
+      "dzik": {
+        "mean": 82.95121951219512,
+        "count": 82
+      },
+      "rogacz": {
+        "mean": 93.60493827160494,
+        "count": 81
+      }
+    }
   },
   {
-    "nazwa_zawodow": "XXV Mistrzostwa PZŁ w kl. mistrzowskiej (dwudniowe)",
-    "data_zawodow": "2026-08-22",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "XXXI Puchar Jezior Mazurskich",
-    "data_zawodow": "2026-07-11",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "I Puchar Kujaw i Ziemi Dobrzyńskiej",
+    "data_zawodow": "2026-08-15",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 413.2844036697248,
+        "count": 109
+      },
+      "krag": {
+        "mean": 80.37735849056604,
+        "count": 106
+      },
+      "os": {
+        "mean": 79.12037037037037,
+        "count": 108
+      },
+      "mop": {
+        "mean": 85.94339622641509,
+        "count": 106
+      },
+      "dzik": {
+        "mean": 81.1651376146789,
+        "count": 109
+      },
+      "rogacz": {
+        "mean": 91.98165137614679,
+        "count": 109
+      }
+    }
   },
   {
     "nazwa_zawodow": "VI Puchar Firmy Twoja Broń",
     "data_zawodow": "2026-07-12",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 424.8658536585366,
+        "count": 82
+      },
+      "krag": {
+        "mean": 83.90243902439025,
+        "count": 82
+      },
+      "os": {
+        "mean": 81.03658536585365,
+        "count": 82
+      },
+      "mop": {
+        "mean": 85.3048780487805,
+        "count": 82
+      },
+      "dzik": {
+        "mean": 80.23170731707317,
+        "count": 82
+      },
+      "rogacz": {
+        "mean": 94.39024390243902,
+        "count": 82
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "Liga Strzelecka - Eliminacje Reg III",
+    "data_zawodow": "2026-05-16",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 406.6231884057971,
+        "count": 69
+      },
+      "krag": {
+        "mean": 80.72463768115942,
+        "count": 69
+      },
+      "os": {
+        "mean": 70.3623188405797,
+        "count": 69
+      },
+      "mop": {
+        "mean": 81.59420289855072,
+        "count": 69
+      },
+      "dzik": {
+        "mean": 80.69565217391305,
+        "count": 69
+      },
+      "rogacz": {
+        "mean": 93.2463768115942,
+        "count": 69
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "XXXI Puchar Jezior Mazurskich",
+    "data_zawodow": "2026-07-11",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 413.2037037037037,
+        "count": 108
+      },
+      "krag": {
+        "mean": 79.76851851851852,
+        "count": 108
+      },
+      "os": {
+        "mean": 79.02777777777777,
+        "count": 108
+      },
+      "dzik": {
+        "mean": 77.55555555555556,
+        "count": 108
+      },
+      "rogacz": {
+        "mean": 91.06481481481481,
+        "count": 108
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "XXV Mistrzostwa PZŁ w kl. mistrzowskiej (dwudniowe)",
+    "data_zawodow": "2026-08-22",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 433.7453416149068,
+        "count": 161
+      },
+      "krag": {
+        "mean": 86.05590062111801,
+        "count": 161
+      },
+      "os": {
+        "mean": 85.27950310559007,
+        "count": 161
+      },
+      "mop": {
+        "mean": 83.04347826086956,
+        "count": 161
+      },
+      "dzik": {
+        "mean": 84.525,
+        "count": 160
+      },
+      "rogacz": {
+        "mean": 95.36645962732919,
+        "count": 161
+      }
+    }
   },
   {
     "nazwa_zawodow": "Półfinał Ligi Strzeleckiej Reg I, II, III",
     "data_zawodow": "2026-08-01",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "X Puchar Północnego Mazowsza",
-    "data_zawodow": "2026-09-19",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 429.5111111111111,
+        "count": 90
+      },
+      "krag": {
+        "mean": 83.11111111111111,
+        "count": 90
+      },
+      "os": {
+        "mean": 82.94444444444444,
+        "count": 90
+      },
+      "mop": {
+        "mean": 84.33333333333333,
+        "count": 90
+      },
+      "dzik": {
+        "mean": 84.12222222222222,
+        "count": 90
+      },
+      "rogacz": {
+        "mean": 95.0,
+        "count": 90
+      }
+    }
   },
   {
     "nazwa_zawodow": "XXXI Turniej Chmielakowy",
     "data_zawodow": "2026-09-05",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 385.77777777777777,
+        "count": 90
+      },
+      "krag": {
+        "mean": 74.33333333333333,
+        "count": 90
+      },
+      "os": {
+        "mean": 67.80898876404494,
+        "count": 89
+      },
+      "mop": {
+        "mean": 76.06741573033707,
+        "count": 89
+      },
+      "dzik": {
+        "mean": 80.1590909090909,
+        "count": 88
+      },
+      "rogacz": {
+        "mean": 91.80898876404494,
+        "count": 89
+      }
+    }
   },
   {
     "nazwa_zawodow": "VII Memoriał Dr Grzegorza Wardyńskiego",
     "data_zawodow": "2026-04-25",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 411.6779661016949,
+        "count": 118
+      },
+      "krag": {
+        "mean": 79.78632478632478,
+        "count": 117
+      },
+      "os": {
+        "mean": 72.58474576271186,
+        "count": 118
+      },
+      "mop": {
+        "mean": 85.46610169491525,
+        "count": 118
+      },
+      "dzik": {
+        "mean": 80.34745762711864,
+        "count": 118
+      },
+      "rogacz": {
+        "mean": 94.16949152542372,
+        "count": 118
+      }
+    }
   },
   {
-    "nazwa_zawodow": "XXVIII Puchar Grodu nad Prosną",
-    "data_zawodow": "2026-08-16",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "VI Memoriał Marka Ziomka",
-    "data_zawodow": "2026-05-09",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "V Puchar Trybunalski",
-    "data_zawodow": "2026-06-21",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "X Puchar Północnego Mazowsza",
+    "data_zawodow": "2026-09-19",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 405.17391304347825,
+        "count": 69
+      },
+      "krag": {
+        "mean": 75.28985507246377,
+        "count": 69
+      },
+      "os": {
+        "mean": 73.84057971014492,
+        "count": 69
+      },
+      "mop": {
+        "mean": 82.31884057971014,
+        "count": 69
+      },
+      "dzik": {
+        "mean": 79.82608695652173,
+        "count": 69
+      },
+      "rogacz": {
+        "mean": 93.89855072463769,
+        "count": 69
+      }
+    }
   },
   {
     "nazwa_zawodow": "XII Puchar Jury Częstochowskiej",
     "data_zawodow": "2026-04-12",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 407.55,
+        "count": 100
+      },
+      "krag": {
+        "mean": 83.0,
+        "count": 100
+      },
+      "os": {
+        "mean": 75.05050505050505,
+        "count": 99
+      },
+      "mop": {
+        "mean": 80.35714285714286,
+        "count": 98
+      },
+      "dzik": {
+        "mean": 79.71717171717172,
+        "count": 99
+      },
+      "rogacz": {
+        "mean": 93.51515151515152,
+        "count": 99
+      }
+    }
   },
   {
-    "nazwa_zawodow": "XLI Krajowy Konkurs Kół Łowieckich (dwudniowe)",
-    "data_zawodow": "2026-07-04",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "XXVIII Puchar Grodu nad Prosną",
+    "data_zawodow": "2026-08-16",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 416.78333333333336,
+        "count": 120
+      },
+      "krag": {
+        "mean": 83.31932773109244,
+        "count": 119
+      },
+      "os": {
+        "mean": 78.08333333333333,
+        "count": 120
+      },
+      "mop": {
+        "mean": 85.58333333333333,
+        "count": 120
+      },
+      "dzik": {
+        "mean": 81.11965811965813,
+        "count": 117
+      },
+      "rogacz": {
+        "mean": 91.4,
+        "count": 120
+      }
+    }
   },
   {
-    "nazwa_zawodow": "VIII Puchar Sudeckiej Krainy ŁowieckiejI",
-    "data_zawodow": "2026-06-28",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "V Puchar Trybunalski",
+    "data_zawodow": "2026-06-21",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 381.4655172413793,
+        "count": 116
+      },
+      "krag": {
+        "mean": 76.40350877192982,
+        "count": 114
+      },
+      "os": {
+        "mean": 71.05263157894737,
+        "count": 114
+      },
+      "mop": {
+        "mean": 80.17543859649123,
+        "count": 114
+      },
+      "dzik": {
+        "mean": 73.05263157894737,
+        "count": 114
+      },
+      "rogacz": {
+        "mean": 89.03571428571429,
+        "count": 112
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "VI Memoriał Marka Ziomka",
+    "data_zawodow": "2026-05-09",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 410.7096774193548,
+        "count": 62
+      },
+      "krag": {
+        "mean": 83.11475409836065,
+        "count": 61
+      },
+      "os": {
+        "mean": 69.6774193548387,
+        "count": 62
+      },
+      "mop": {
+        "mean": 88.79032258064517,
+        "count": 62
+      },
+      "dzik": {
+        "mean": 81.06557377049181,
+        "count": 61
+      },
+      "rogacz": {
+        "mean": 92.19672131147541,
+        "count": 61
+      }
+    }
   },
   {
     "nazwa_zawodow": "VII Puchar Firmy TAGART",
     "data_zawodow": "2026-08-15",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 397.1034482758621,
+        "count": 116
+      },
+      "krag": {
+        "mean": 75.47413793103448,
+        "count": 116
+      },
+      "os": {
+        "mean": 71.76724137931035,
+        "count": 116
+      },
+      "mop": {
+        "mean": 81.50862068965517,
+        "count": 116
+      },
+      "dzik": {
+        "mean": 77.62068965517241,
+        "count": 116
+      },
+      "rogacz": {
+        "mean": 90.73275862068965,
+        "count": 116
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "XLI Krajowy Konkurs Kół Łowieckich (dwudniowe)",
+    "data_zawodow": "2026-07-04",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 416.71232876712327,
+        "count": 146
+      },
+      "krag": {
+        "mean": 79.8972602739726,
+        "count": 146
+      },
+      "os": {
+        "mean": 75.20547945205479,
+        "count": 146
+      },
+      "mop": {
+        "mean": 87.73972602739725,
+        "count": 146
+      },
+      "dzik": {
+        "mean": 81.15753424657534,
+        "count": 146
+      },
+      "rogacz": {
+        "mean": 92.71232876712328,
+        "count": 146
+      }
+    }
   },
   {
     "nazwa_zawodow": "X Puchar Czeskiej Zbrojovki",
     "data_zawodow": "2026-04-26",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 394.2032520325203,
+        "count": 123
+      },
+      "krag": {
+        "mean": 77.09016393442623,
+        "count": 122
+      },
+      "os": {
+        "mean": 74.1869918699187,
+        "count": 123
+      },
+      "mop": {
+        "mean": 71.63934426229508,
+        "count": 122
+      },
+      "dzik": {
+        "mean": 81.86776859504133,
+        "count": 121
+      },
+      "rogacz": {
+        "mean": 93.47933884297521,
+        "count": 121
+      }
+    }
   },
   {
-    "nazwa_zawodow": "XIII Puchar Firmy DELTA",
-    "data_zawodow": "2026-05-23",
-    "srednie_zawodow": {}
-  },
-  {
-    "nazwa_zawodow": "XXVIII Puchar Toruńskiej Katarzynki",
-    "data_zawodow": "2026-05-24",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "VIII Puchar Sudeckiej Krainy ŁowieckiejI",
+    "data_zawodow": "2026-06-28",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 388.49038461538464,
+        "count": 104
+      },
+      "krag": {
+        "mean": 74.51923076923077,
+        "count": 104
+      },
+      "os": {
+        "mean": 71.97115384615384,
+        "count": 104
+      },
+      "mop": {
+        "mean": 81.53846153846153,
+        "count": 104
+      },
+      "dzik": {
+        "mean": 74.0,
+        "count": 104
+      },
+      "rogacz": {
+        "mean": 86.46153846153847,
+        "count": 104
+      }
+    }
   },
   {
     "nazwa_zawodow": "V Puchar Tarnowskiej Jaskółki",
     "data_zawodow": "2026-04-19",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 389.81481481481484,
+        "count": 108
+      },
+      "krag": {
+        "mean": 73.17757009345794,
+        "count": 107
+      },
+      "os": {
+        "mean": 69.76415094339623,
+        "count": 106
+      },
+      "mop": {
+        "mean": 83.08411214953271,
+        "count": 107
+      },
+      "dzik": {
+        "mean": 75.78703703703704,
+        "count": 108
+      },
+      "rogacz": {
+        "mean": 90.74074074074075,
+        "count": 108
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "XIII Puchar Firmy DELTA",
+    "data_zawodow": "2026-05-23",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 412.0120481927711,
+        "count": 83
+      },
+      "krag": {
+        "mean": 75.78313253012048,
+        "count": 83
+      },
+      "os": {
+        "mean": 76.50602409638554,
+        "count": 83
+      },
+      "mop": {
+        "mean": 85.5421686746988,
+        "count": 83
+      },
+      "dzik": {
+        "mean": 80.04819277108433,
+        "count": 83
+      },
+      "rogacz": {
+        "mean": 94.13253012048193,
+        "count": 83
+      }
+    }
   },
   {
     "nazwa_zawodow": "V Memoriał Jerzego Adamczyka",
     "data_zawodow": "2026-04-11",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 404.488,
+        "count": 125
+      },
+      "krag": {
+        "mean": 81.61290322580645,
+        "count": 124
+      },
+      "os": {
+        "mean": 71.7741935483871,
+        "count": 124
+      },
+      "mop": {
+        "mean": 82.0,
+        "count": 125
+      },
+      "dzik": {
+        "mean": 79.11382113821138,
+        "count": 123
+      },
+      "rogacz": {
+        "mean": 93.2258064516129,
+        "count": 124
+      }
+    }
   },
   {
-    "nazwa_zawodow": "II Beskidzki Puchar Węglowy",
-    "data_zawodow": "2026-04-18",
-    "srednie_zawodow": {}
+    "nazwa_zawodow": "XXVIII Puchar Toruńskiej Katarzynki",
+    "data_zawodow": "2026-05-24",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 400.00840336134456,
+        "count": 119
+      },
+      "krag": {
+        "mean": 79.66101694915254,
+        "count": 118
+      },
+      "os": {
+        "mean": 77.96610169491525,
+        "count": 118
+      },
+      "mop": {
+        "mean": 80.38461538461539,
+        "count": 117
+      },
+      "dzik": {
+        "mean": 81.61111111111111,
+        "count": 108
+      },
+      "rogacz": {
+        "mean": 94.57894736842105,
+        "count": 114
+      }
+    }
   },
   {
     "nazwa_zawodow": "XXVIII Tarnobrzeski Puchar Wiosny",
     "data_zawodow": "2026-05-02",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 381.6454545454545,
+        "count": 110
+      },
+      "krag": {
+        "mean": 73.4090909090909,
+        "count": 110
+      },
+      "os": {
+        "mean": 70.54545454545455,
+        "count": 110
+      },
+      "mop": {
+        "mean": 73.54545454545455,
+        "count": 110
+      },
+      "dzik": {
+        "mean": 77.44036697247707,
+        "count": 109
+      },
+      "rogacz": {
+        "mean": 89.02777777777777,
+        "count": 108
+      }
+    }
   },
   {
     "nazwa_zawodow": "VI Puchar Firmy KOLBA",
     "data_zawodow": "2026-06-06",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 408.0854700854701,
+        "count": 117
+      },
+      "krag": {
+        "mean": 80.98290598290598,
+        "count": 117
+      },
+      "os": {
+        "mean": 75.8119658119658,
+        "count": 117
+      },
+      "mop": {
+        "mean": 80.68376068376068,
+        "count": 117
+      },
+      "dzik": {
+        "mean": 80.35897435897436,
+        "count": 117
+      },
+      "rogacz": {
+        "mean": 93.4424778761062,
+        "count": 113
+      }
+    }
   },
   {
     "nazwa_zawodow": "VII Puchar RW HUNT",
     "data_zawodow": "2026-06-07",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 409.0093457943925,
+        "count": 107
+      },
+      "krag": {
+        "mean": 79.7196261682243,
+        "count": 107
+      },
+      "os": {
+        "mean": 74.95283018867924,
+        "count": 106
+      },
+      "mop": {
+        "mean": 86.08490566037736,
+        "count": 106
+      },
+      "dzik": {
+        "mean": 77.9245283018868,
+        "count": 106
+      },
+      "rogacz": {
+        "mean": 93.43396226415095,
+        "count": 106
+      }
+    }
+  },
+  {
+    "nazwa_zawodow": "II Beskidzki Puchar Węglowy",
+    "data_zawodow": "2026-04-18",
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 405.98,
+        "count": 50
+      },
+      "krag": {
+        "mean": 77.85714285714286,
+        "count": 49
+      },
+      "os": {
+        "mean": 69.4,
+        "count": 50
+      },
+      "mop": {
+        "mean": 89.2,
+        "count": 50
+      },
+      "dzik": {
+        "mean": 79.6,
+        "count": 50
+      },
+      "rogacz": {
+        "mean": 91.48,
+        "count": 50
+      }
+    }
   },
   {
     "nazwa_zawodow": "II Puchar AMBER CUP",
     "data_zawodow": "2026-06-28",
-    "srednie_zawodow": {}
+    "srednie_zawodow": {
+      "wynik": {
+        "mean": 392.5811965811966,
+        "count": 117
+      },
+      "krag": {
+        "mean": 75.82608695652173,
+        "count": 115
+      },
+      "os": {
+        "mean": 76.03448275862068,
+        "count": 116
+      },
+      "mop": {
+        "mean": 84.5945945945946,
+        "count": 111
+      },
+      "dzik": {
+        "mean": 77.12280701754386,
+        "count": 114
+      },
+      "rogacz": {
+        "mean": 89.56140350877193,
+        "count": 114
+      }
+    }
   }
 ]
