@@ -36,7 +36,12 @@ jobs:
       - name: Test publication safeguards
         run: python -m unittest test_publication
 
-      - name: Build site
+      - name: Build interface from saved results
+        if: github.event_name == 'push'
+        run: python build_published_site.py
+
+      - name: Refresh results and build site
+        if: github.event_name != 'push'
         run: python bialystok_polfinal.py
 
       - name: Configure GitHub Pages
