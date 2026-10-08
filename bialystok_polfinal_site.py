@@ -1014,7 +1014,7 @@ def build_html(ranking, starts, events):
         <h1>Klasyfikacja sezonu.</h1>
         <p class="subhead">Sezon 2026 · Okręg białostocki. Klasyfikacja według sumy trzech najlepszych wyników z całego sezonu.</p>
       </div>
-      <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"><img src="logo.png" alt="Rozbity rzutek" width="110" height="110"></div>
+      <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"><img src="logo-transparent.png" alt="Rozbity rzutek" width="110" height="110"></div>
     </div>
   </header>
 
@@ -1474,3 +1474,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
