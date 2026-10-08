@@ -161,6 +161,22 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
         lambda value: event_in_date_range(value, DATA_OD_FINAL, DATA_DO_FINAL)
     )].copy()
     df = df[df["razem"].notna()].copy()
+    # Whole-field event averages, computed before filtering to Białystok.
+    average_rows = []
+    for event, field in df[df["razem"] > 0].groupby("nazwa_zawodow", dropna=False):
+        field = field.loc[field.groupby(["zawodnik", "okreg"], dropna=False)["razem"].idxmax()]
+        averages = {}
+        for code in ["razem", "krag", "os", "mop", "dzik", "rogacz"]:
+            if code not in field:
+                continue
+            values = pd.to_numeric(field[code], errors="coerce")
+            values = values[values > 0]
+            if not values.empty:
+                averages["wynik" if code == "razem" else code] = {
+                    "mean": float(values.mean()), "count": int(len(values))
+                }
+        average_rows.append({"nazwa_zawodow": event, "srednie_zawodow": averages})
+    event_averages = pd.DataFrame(average_rows, columns=["nazwa_zawodow", "srednie_zawodow"])
     event_best_scores = (
         df[df["razem"] > 0]
         .groupby("nazwa_zawodow", dropna=False)["razem"]
@@ -183,6 +199,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
     starts = df.loc[best_row_ids].copy()
     starts = starts.rename(columns={"razem": "wynik"})
     starts = starts.merge(event_best_scores, on="nazwa_zawodow", how="left")
+    starts = starts.merge(event_averages, on="nazwa_zawodow", how="left")
     starts["procent_do_najlepszego_w_zawodach"] = (
         starts["wynik"] / starts["najlepszy_wynik_zawodow"] * 100
     ).round(1)
@@ -193,6 +210,7 @@ def build_bialystok_polfinal_ranking(results: pd.DataFrame) -> tuple[pd.DataFram
             "nazwa_zawodow",
             "wynik",
             "najlepszy_wynik_zawodow",
+            "srednie_zawodow",
             "procent_do_najlepszego_w_zawodach",
             "klasa",
             "data_zawodow",

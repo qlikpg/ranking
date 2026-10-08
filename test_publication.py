@@ -38,6 +38,22 @@ class PublicationTests(unittest.TestCase):
         self.assertNotIn('Kwalifikacja mistrzostwa', html)
         self.assertNotIn('badge.textContent = "Finał"', html)
 
+    def test_event_average_uses_whole_field_and_one_result_per_player(self):
+        base = dict(nazwa_zawodow="Test średniej", data_zawodow="2026-06-01",
+                    klasa="M", strzelnica="", url_wynikow="event:average")
+        rows = [dict(base, zawodnik=name, okreg=district, razem=total, krag=score)
+                for name, district, total, score in [
+                    ("A", "Białystok", 400, 80),
+                    ("A", "Białystok", 300, 60),
+                    ("B", "Warszawa", 500, 100),
+                    ("C", "Warszawa", 0, 0),
+                    ("D", "Warszawa", 450, None),
+                ]]
+        _, starts = ranking.build_bialystok_polfinal_ranking(pd.DataFrame(rows))
+        average = starts.iloc[0]["srednie_zawodow"]
+        self.assertEqual(average["wynik"], {"mean": 450.0, "count": 3})
+        self.assertEqual(average["krag"], {"mean": 90.0, "count": 2})
+
     @patch("bialystok_polfinal_site.write_site_from_dataframes")
     @patch.object(ranking, "pobierz_zawody_z_wynikami", return_value=pd.DataFrame())
     def test_empty_calendar_aborts_before_writing(self, fetch, write):

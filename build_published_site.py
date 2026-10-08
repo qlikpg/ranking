@@ -18,6 +18,17 @@ def main():
         if not isinstance(records, list) or not records:
             raise RuntimeError(f'Nieprawidłowe lub puste dane: {name}')
         datasets.append(records)
+    averages_file = Path('data/event_averages.json')
+    if averages_file.exists():
+        averages = {
+            (row['nazwa_zawodow'], row['data_zawodow']): row['srednie_zawodow']
+            for row in json.loads(averages_file.read_text(encoding='utf-8'))
+        }
+        for row in datasets[1]:
+            if not row.get('srednie_zawodow'):
+                row['srednie_zawodow'] = averages.get(
+                    (row.get('nazwa_zawodow'), row.get('data_zawodow')), {}
+                )
     write_site(*datasets)
 
 
