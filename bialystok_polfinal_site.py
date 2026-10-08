@@ -441,13 +441,15 @@ def build_hidden_analysis_html(starts):
       .discipline em {{ text-align: left; }}
     }}
   </style>
+  <link rel="stylesheet" href="design.css">
 </head>
 <body>
   <header>
     <div class="wrap hero">
       <div>
-        <h1>Ukryta analiza slabszych konkurencji</h1>
-        <p>Raport wskazuje, gdzie kazdy zawodnik traci najwiecej punktow i gdzie ma najwieksza rezerwe treningowa.</p>
+        <div class="masthead">Białystok / Analiza zawodników</div>
+        <h1>Profil zawodnika.</h1>
+        <p>Wyniki konkurencji, rezerwy punktowe i kierunek zmian formy.</p>
       </div>
       <div class="secret">Modul ukryty · <a href="historia-wynikow.html">Historia wyników</a></div>
     </div>
@@ -456,6 +458,7 @@ def build_hidden_analysis_html(starts):
     <div class="grid">
       {"".join(rows)}
     </div>
+    <footer class="editorial-footer"><span>Białystok · Strzelectwo myśliwskie</span><span>Sezon 2026 / Dane zawodów PZŁ</span></footer>
   </main>
 </body>
 </html>
@@ -1001,12 +1004,14 @@ def build_html(ranking, starts, events):
       }}
     }}
   </style>
+  <link rel="stylesheet" href="design.css">
 </head>
 <body>
   <header>
     <div class="topbar">
       <div>
-        <h1>Ranking Białystok — klasyfikacja końcowa 2026</h1>
+        <div class="masthead">Strzelectwo myśliwskie / Białystok / 2026</div>
+        <h1>Klasyfikacja sezonu.</h1>
         <p class="subhead">Sezon 2026 · Okręg białostocki. Klasyfikacja według sumy trzech najlepszych wyników z całego sezonu.</p>
       </div>
       <div class="mark" id="secretAnalysisTrigger" role="button" tabindex="0" aria-label="Znak rankingu"></div>
@@ -1117,6 +1122,7 @@ def build_html(ranking, starts, events):
       </div>
       <div class="empty" id="eventsEmpty" hidden>Brak zawodów dla podanego filtra.</div>
     </section>
+    <footer class="editorial-footer"><span>Białystok · Strzelectwo myśliwskie</span><span>Sezon 2026 / Dane zawodów PZŁ</span></footer>
   </main>
 
   {to_json_script("ranking-data", ranking)}

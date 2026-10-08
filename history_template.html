@@ -3,16 +3,17 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#edf2f6;color:#173047;font:16px system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 18px}a{color:#126580}h1{margin-bottom:8px}.note{color:#526675}.card{background:white;border:1px solid #d8e2ea;border-radius:16px;padding:20px;margin:20px 0}.filters{display:flex;gap:16px;flex-wrap:wrap}label{display:grid;gap:6px;flex:1;min-width:170px}select,input{font:inherit;padding:10px;border:1px solid #aebfcd;border-radius:8px;width:100%;background:white}svg{width:100%;height:auto;min-width:600px}.chart{overflow-x:auto}#summary{font-weight:600;margin:20px 0}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:12px;border-bottom:1px solid #e0e8ed}th{background:#f5f8fa}.table{overflow:auto}circle{cursor:pointer}circle:focus{stroke:#173047;stroke-width:4}#empty{padding:30px;text-align:center}[hidden]{display:none!important}
 .tooltip{position:fixed;z-index:10;max-width:min(340px,calc(100vw - 24px));padding:10px 14px;background:#173047;color:white;border-radius:8px;box-shadow:0 4px 16px #0003;font-size:14px;line-height:1.5;pointer-events:none;white-space:pre-line}
-</style></head><body><main>
-<a href="analiza-slabosci.html">← Analiza słabości</a> · <a href="index.html">Ranking</a>
-<h1>Historia wyników zawodników</h1><p class="note">Ukryty moduł · Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
+</style><link rel="stylesheet" href="design.css"></head><body class="history-page"><main>
+<nav class="history-nav"><a href="index.html">← Klasyfikacja sezonu</a><a href="analiza-slabosci.html">Profil zawodnika</a></nav>
+<div class="masthead" style="margin-top:32px">Białystok / Analiza wyników</div>
+<h1>Wyniki w czasie.</h1><p class="note">Ukryty moduł · Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
 <section class="card"><div class="filters">
 <label>Zawodnik<select id="player"></select></label>
 <label>Konkurencja<select id="metric"><option value="wynik">Wynik łączny</option><option value="krag">Krąg</option><option value="os">Oś myśliwska</option><option value="mop">MOP</option><option value="dzik">Dzik</option><option value="rogacz">Rogacz</option></select></label>
 <label>Od<input id="from" type="date"></label><label>Do<input id="to" type="date"></label></div>
 <p id="summary" aria-live="polite"></p><p id="empty" hidden>Brak ukończonych wyników z prawidłową datą w tym zakresie.</p>
 <div class="chart"><svg id="chart" viewBox="0 0 1000 400" role="img" aria-label="Wyniki zawodów w czasie"></svg></div>
-<p class="note"><span style="color:#167d98">● Wynik zawodnika</span> · <span style="color:#c46b19">● Średnia zawodów</span></p>
+<p class="note"><span style="color:#c7d8a6">● Wynik zawodnika</span> · <span style="color:#bc9770">● Średnia zawodów</span></p>
 <p class="note">Średnia obejmuje dostępne ukończone wyniki całej obsady zawodów, w tym wybranego zawodnika. Jeden wynik na zawodnika (najlepszy wynik łączny); zera i brakujące wyniki pomijamy. Brak pełnej tabeli oznaczamy kreską.</p>
 <p id="detail" aria-live="polite"></p>
 <p class="note">Najedź na punkt lub wybierz go klawiszem Tab, aby zobaczyć szczegóły. Pełne wyniki znajdują się w tabeli poniżej.</p>
@@ -61,16 +62,16 @@ for(const p of data){const tr=document.createElement('tr');for(const value of [p
 const min=data[0].date.t,max=data[data.length-1].date.t,ymax=Math.max(100,Math.ceil(Math.max(...data.flatMap(p=>[p.score,p.average?.mean||0]))/50)*50);
 const x=p=>min===max?530:70+(p.date.t-min)/(max-min)*890,y=n=>335-n/ymax*295;
 svg('title',{},`${player.value}: ${metric.options[metric.selectedIndex].text}, ${data.length} startów`);
-for(let i=0;i<=5;i++){const v=ymax*i/5;svg('line',{x1:70,x2:960,y1:y(v),y2:y(v),stroke:'#dce6ed'});svg('text',{x:58,y:y(v)+5,'text-anchor':'end',fill:'#526675','font-size':13},fmt(v));}
-svg('text',{x:70,y:22,fill:'#526675','font-size':13},'Punkty');
+for(let i=0;i<=5;i++){const v=ymax*i/5;svg('line',{x1:70,x2:960,y1:y(v),y2:y(v),stroke:'#2a3225'});svg('text',{x:58,y:y(v)+5,'text-anchor':'end',fill:'#a0ac94','font-size':13},fmt(v));}
+svg('text',{x:70,y:22,fill:'#a0ac94','font-size':13},'Punkty');
 const dates=[...new Map(data.map(p=>[p.date.s,p])).values()];const ticks=dates.length<=6?dates:[0,1,2,3,4,5].map(i=>dates[Math.round(i*(dates.length-1)/5)]);
-for(const p of ticks)svg('text',{x:x(p),y:365,'text-anchor':'middle',fill:'#526675','font-size':13},p.date.s);
+for(const p of ticks)svg('text',{x:x(p),y:365,'text-anchor':'middle',fill:'#a0ac94','font-size':13},p.date.s);
 const reference=data.filter(p=>p.average);
-let segment=[];function drawAverage(){if(segment.length)svg('polyline',{points:segment.join(' '),fill:'none',stroke:'#c46b19','stroke-width':3,'stroke-dasharray':'7 5','data-series':'average'});segment=[];}
+let segment=[];function drawAverage(){if(segment.length)svg('polyline',{points:segment.join(' '),fill:'none',stroke:'#bc9770','stroke-width':3,'stroke-dasharray':'7 5','data-series':'average'});segment=[];}
 for(const p of data){if(p.average)segment.push(`${x(p)},${y(p.average.mean)}`);else drawAverage();}drawAverage();
-for(const p of reference){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`;const c=svg('circle',{cx:x(p),cy:y(p.average.mean),r:5,fill:'#c46b19',tabindex:0,'aria-label':detail,'data-series':'average'});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
-svg('polyline',{points:data.map(p=>`${x(p)},${y(p.score)}`).join(' '),fill:'none',stroke:'#167d98','stroke-width':3});
-for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt${p.average?` · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`:''}`;const c=svg('circle',{cx:x(p),cy:y(p.score),'data-series':'player',r:6,fill:'#167d98',stroke:'white','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
+for(const p of reference){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`;const c=svg('circle',{cx:x(p),cy:y(p.average.mean),r:5,fill:'#bc9770',tabindex:0,'aria-label':detail,'data-series':'average'});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
+svg('polyline',{points:data.map(p=>`${x(p)},${y(p.score)}`).join(' '),fill:'none',stroke:'#c7d8a6','stroke-width':3});
+for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt${p.average?` · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`:''}`;const c=svg('circle',{cx:x(p),cy:y(p.score),'data-series':'player',r:6,fill:'#c7d8a6',stroke:'#0e120d','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
 }
 for(const el of [player,metric,from,to])el.addEventListener('change',render);render();
 </script></main></body></html>
