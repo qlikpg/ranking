@@ -451,7 +451,7 @@ def build_hidden_analysis_html(starts):
         <h1>Profil zawodnika.</h1>
         <p>Wyniki konkurencji, rezerwy punktowe i kierunek zmian formy.</p>
       </div>
-      <div class="secret">Modul ukryty · <a href="historia-wynikow.html">Historia wyników</a></div>
+      <div class="secret">Moduł ukryty</div>
     </div>
   </header>
   <main class="wrap">
@@ -1222,6 +1222,17 @@ def build_html(ranking, starts, events):
       return td;
     }}
 
+    function playerCell(name) {{
+      const td = document.createElement("td");
+      const link = document.createElement("a");
+      link.className = "player-link";
+      link.href = "historia-wynikow.html?zawodnik=" + encodeURIComponent(text(name));
+      link.textContent = text(name);
+      link.setAttribute("aria-label", "Historia wyników: " + text(name));
+      td.appendChild(link);
+      return td;
+    }}
+
     function renderRanking(rows) {{
       const body = document.getElementById("rankingBody");
       const empty = document.getElementById("rankingEmpty");
@@ -1238,7 +1249,7 @@ def build_html(ranking, starts, events):
         rankCell.appendChild(rankWrap);
         tr.append(
           rankCell,
-          cell(row.zawodnik),
+          playerCell(row.zawodnik),
           cell(row.suma_3_najlepszych, "number score"),
           cell(row.liczba_startow, "number"),
           cell(row.najlepszy_1, "number"),
@@ -1258,7 +1269,7 @@ def build_html(ranking, starts, events):
       rows.forEach((row) => {{
         const tr = document.createElement("tr");
         tr.append(
-          cell(row.zawodnik),
+          playerCell(row.zawodnik),
           cell(row.nazwa_zawodow),
           cell(row.wynik, "number score"),
           cell(row.klasa),

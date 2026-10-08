@@ -4,9 +4,9 @@
 *{box-sizing:border-box}body{margin:0;background:#edf2f6;color:#173047;font:16px system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 18px}a{color:#126580}h1{margin-bottom:8px}.note{color:#526675}.card{background:white;border:1px solid #d8e2ea;border-radius:16px;padding:20px;margin:20px 0}.filters{display:flex;gap:16px;flex-wrap:wrap}label{display:grid;gap:6px;flex:1;min-width:170px}select,input{font:inherit;padding:10px;border:1px solid #aebfcd;border-radius:8px;width:100%;background:white}svg{width:100%;height:auto;min-width:600px}.chart{overflow-x:auto}#summary{font-weight:600;margin:20px 0}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:12px;border-bottom:1px solid #e0e8ed}th{background:#f5f8fa}.table{overflow:auto}circle{cursor:pointer}circle:focus{stroke:#173047;stroke-width:4}#empty{padding:30px;text-align:center}[hidden]{display:none!important}
 .tooltip{position:fixed;z-index:10;max-width:min(340px,calc(100vw - 24px));padding:10px 14px;background:#173047;color:white;border-radius:8px;box-shadow:0 4px 16px #0003;font-size:14px;line-height:1.5;pointer-events:none;white-space:pre-line}
 </style><link rel="stylesheet" href="design.css"></head><body class="history-page"><main>
-<nav class="history-nav"><a href="index.html">← Klasyfikacja sezonu</a><a href="analiza-slabosci.html">Profil zawodnika</a></nav>
+<nav class="history-nav"><a href="index.html">← Klasyfikacja sezonu</a></nav>
 <div class="masthead" style="margin-top:32px">Białystok / Analiza wyników</div>
-<h1>Wyniki w czasie.</h1><p class="note">Ukryty moduł · Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
+<h1>Wyniki w czasie.</h1><p class="note">Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
 <section class="card"><div class="filters">
 <label>Zawodnik<select id="player"></select></label>
 <label>Konkurencja<select id="metric"><option value="wynik">Wynik łączny</option><option value="krag">Krąg</option><option value="os">Oś myśliwska</option><option value="mop">MOP</option><option value="dzik">Dzik</option><option value="rogacz">Rogacz</option></select></label>
@@ -26,6 +26,8 @@ const player=document.getElementById('player'),metric=document.getElementById('m
 const fmt=n=>new Intl.NumberFormat('pl-PL',{maximumFractionDigits:2}).format(n);
 function dateValue(value){const s=String(value||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return null;const t=Date.parse(s+'T00:00:00Z');return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?{s,t}:null;}
 [...new Set(starts.map(r=>r.zawodnik).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pl')).forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;player.append(o);});
+const requestedPlayer=new URLSearchParams(window.location.search).get('zawodnik');
+if(requestedPlayer&&[...player.options].some(option=>option.value===requestedPlayer))player.value=requestedPlayer;
 function svg(tag,attrs,text){const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,v);if(text!==undefined)el.textContent=text;chart.append(el);return el;}
 function eventKey(r){return JSON.stringify([String(r.data_zawodow||'').slice(0,10),r.nazwa_zawodow||'']);}
 function eventAverages(key){
@@ -53,6 +55,8 @@ window.addEventListener('resize',()=>{tooltip.hidden=true;});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')tooltip.hidden=true;});
 function render(){
  tooltip.hidden=true;
+ document.querySelector('h1').textContent=player.value||'Wyniki w czasie.';
+ document.title=player.value?player.value+' — historia wyników':'Historia wyników zawodników';
 const averages=eventAverages(metric.value);
 const data=starts.filter(r=>r.zawodnik===player.value).map(r=>({r,date:dateValue(r.data_zawodow),score:r[metric.value]===''||r[metric.value]==null?NaN:Number(r[metric.value])})).filter(p=>p.date&&Number.isFinite(p.score)&&p.score>0&&(!from.value||p.date.s>=from.value)&&(!to.value||p.date.s<=to.value)).sort((a,b)=>a.date.t-b.date.t||String(a.r.nazwa_zawodow).localeCompare(String(b.r.nazwa_zawodow),'pl'));
 for(const p of data)p.average=averages.get(eventKey(p.r));
@@ -73,5 +77,6 @@ for(const p of reference){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · �
 svg('polyline',{points:data.map(p=>`${x(p)},${y(p.score)}`).join(' '),fill:'none',stroke:'#c7d8a6','stroke-width':3});
 for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt${p.average?` · Średnia zawodów: ${fmt(p.average.mean)} pkt (${p.average.count} wyników)`:''}`;const c=svg('circle',{cx:x(p),cy:y(p.score),'data-series':'player',r:6,fill:'#c7d8a6',stroke:'#0e120d','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);bindTooltip(c,detail);}
 }
+player.addEventListener('change',()=>{const url=new URL(window.location.href);url.searchParams.set('zawodnik',player.value);window.history.replaceState(null,'',url);});
 for(const el of [player,metric,from,to])el.addEventListener('change',render);render();
 </script></main></body></html>

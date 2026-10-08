@@ -8,3 +8,5 @@
 @media print{:root{--ink:#111;--muted:#555;--line:#ddd;--surface:white;--soft:white;--brand:#222;--green:#222;--brand-dark:#222}body,header,.panel,th,.legend,tbody tr.top-six{background:white!important;color:#111!important}td,.score,.team-list li span,.summary-grid strong{color:#111!important}.masthead,.editorial-footer{color:#555}.stats{display:block}.stat.wide{border-right:none}.stat:not(.wide){padding-left:0}}
 
 .mark{width:110px;height:110px;border:0;border-radius:3px;background:transparent;overflow:hidden}.mark::before,.mark::after{display:none}.mark img{display:block;width:100%;height:100%;object-fit:cover}.topbar{grid-template-columns:1fr 110px}@media(max-width:780px){.topbar{grid-template-columns:1fr 72px}.mark{width:72px;height:72px}}
+
+.player-link{color:#ecece7;text-decoration:underline;text-decoration-color:#506044;text-underline-offset:5px}.player-link:hover{color:#c7d8a6;text-decoration-color:#c7d8a6}
