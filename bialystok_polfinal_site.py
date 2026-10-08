@@ -442,6 +442,8 @@ def build_hidden_analysis_html(starts):
     }}
   </style>
   <link rel="stylesheet" href="design.css">
+  <link rel="icon" type="image/png" href="logo-transparent.png">
+  <link rel="apple-touch-icon" href="logo-transparent.png">
 </head>
 <body>
   <header>
@@ -1005,6 +1007,8 @@ def build_html(ranking, starts, events):
     }}
   </style>
   <link rel="stylesheet" href="design.css">
+  <link rel="icon" type="image/png" href="logo-transparent.png">
+  <link rel="apple-touch-icon" href="logo-transparent.png">
 </head>
 <body>
   <header>
@@ -1474,4 +1478,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
