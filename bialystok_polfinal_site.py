@@ -449,7 +449,7 @@ def build_hidden_analysis_html(starts):
         <h1>Ukryta analiza slabszych konkurencji</h1>
         <p>Raport wskazuje, gdzie kazdy zawodnik traci najwiecej punktow i gdzie ma najwieksza rezerwe treningowa.</p>
       </div>
-      <div class="secret">Modul ukryty</div>
+      <div class="secret">Modul ukryty · <a href="historia-wynikow.html">Historia wyników</a></div>
     </div>
   </header>
   <main class="wrap">
@@ -460,6 +460,11 @@ def build_hidden_analysis_html(starts):
 </body>
 </html>
 """
+
+
+def build_history_html(starts):
+    template = Path(__file__).with_name("history_template.html").read_text(encoding="utf-8")
+    return template.replace("__DATA__", to_json_script("history-data", starts))
 
 
 def build_html(ranking, starts, events):
@@ -1426,6 +1431,7 @@ def write_site(ranking, starts, events):
     OUTPUT_DIR.mkdir(exist_ok=True)
     OUTPUT_FILE.write_text(build_html(ranking, starts, events), encoding="utf-8")
     HIDDEN_ANALYSIS_FILE.write_text(build_hidden_analysis_html(starts), encoding="utf-8")
+    (OUTPUT_DIR / "historia-wynikow.html").write_text(build_history_html(starts), encoding="utf-8")
     print("Zapisano stronę:", OUTPUT_FILE)
     print("Zapisano ukryty moduł:", HIDDEN_ANALYSIS_FILE)
 

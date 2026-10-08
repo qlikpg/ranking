@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Historia wyników zawodników</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf2f6;color:#173047;font:16px system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 18px}a{color:#126580}h1{margin-bottom:8px}.note{color:#526675}.card{background:white;border:1px solid #d8e2ea;border-radius:16px;padding:20px;margin:20px 0}.filters{display:flex;gap:16px;flex-wrap:wrap}label{display:grid;gap:6px;flex:1;min-width:170px}select,input{font:inherit;padding:10px;border:1px solid #aebfcd;border-radius:8px;width:100%;background:white}svg{width:100%;height:auto;min-width:600px}.chart{overflow-x:auto}#summary{font-weight:600;margin:20px 0}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:12px;border-bottom:1px solid #e0e8ed}th{background:#f5f8fa}.table{overflow:auto}circle{cursor:pointer}circle:focus{stroke:#173047;stroke-width:4}#empty{padding:30px;text-align:center}[hidden]{display:none!important}
+</style></head><body><main>
+<a href="analiza-slabosci.html">← Analiza słabości</a> · <a href="index.html">Ranking</a>
+<h1>Historia wyników zawodników</h1><p class="note">Ukryty moduł · Wyniki dostępne w rankingu, uporządkowane według daty zawodów. Zera i brakujące wyniki pomijamy. Łączna punktacja może obejmować różne formaty zawodów.</p>
+<section class="card"><div class="filters">
+<label>Zawodnik<select id="player"></select></label>
+<label>Konkurencja<select id="metric"><option value="wynik">Wynik łączny</option><option value="krag">Krąg</option><option value="os">Oś myśliwska</option><option value="mop">MOP</option><option value="dzik">Dzik</option><option value="rogacz">Rogacz</option></select></label>
+<label>Od<input id="from" type="date"></label><label>Do<input id="to" type="date"></label></div>
+<p id="summary" aria-live="polite"></p><p id="empty" hidden>Brak ukończonych wyników z prawidłową datą w tym zakresie.</p>
+<div class="chart"><svg id="chart" viewBox="0 0 1000 400" role="img" aria-label="Wyniki zawodów w czasie"></svg></div>
+<p id="detail" aria-live="polite"></p>
+<p class="note">Najedź na punkt lub wybierz go klawiszem Tab, aby zobaczyć szczegóły. Pełne wyniki znajdują się w tabeli poniżej.</p>
+<div class="table"><table><thead><tr><th>Data</th><th>Zawody</th><th>Wynik (pkt)</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+__DATA__
+<script>
+const starts=JSON.parse(document.getElementById('history-data').textContent);
+const player=document.getElementById('player'),metric=document.getElementById('metric'),from=document.getElementById('from'),to=document.getElementById('to'),chart=document.getElementById('chart');
+const fmt=n=>new Intl.NumberFormat('pl-PL',{maximumFractionDigits:2}).format(n);
+function dateValue(value){const s=String(value||'').slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return null;const t=Date.parse(s+'T00:00:00Z');return Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?{s,t}:null;}
+[...new Set(starts.map(r=>r.zawodnik).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pl')).forEach(name=>{const o=document.createElement('option');o.value=name;o.textContent=name;player.append(o);});
+function svg(tag,attrs,text){const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,v);if(text!==undefined)el.textContent=text;chart.append(el);return el;}
+function render(){
+const data=starts.filter(r=>r.zawodnik===player.value).map(r=>({r,date:dateValue(r.data_zawodow),score:r[metric.value]===''||r[metric.value]==null?NaN:Number(r[metric.value])})).filter(p=>p.date&&Number.isFinite(p.score)&&p.score>0&&(!from.value||p.date.s>=from.value)&&(!to.value||p.date.s<=to.value)).sort((a,b)=>a.date.t-b.date.t||String(a.r.nazwa_zawodow).localeCompare(String(b.r.nazwa_zawodow),'pl'));
+chart.replaceChildren();document.getElementById('detail').textContent='';const body=document.getElementById('rows');body.replaceChildren();document.getElementById('empty').hidden=data.length>0;chart.parentElement.hidden=!data.length;
+document.getElementById('summary').textContent=data.length?`${player.value} · Starty: ${data.length} · Średnia: ${fmt(data.reduce((s,p)=>s+p.score,0)/data.length)} pkt · Najlepszy: ${fmt(Math.max(...data.map(p=>p.score)))} pkt`:'Brak wyników';
+for(const p of data){const tr=document.createElement('tr');for(const value of [p.date.s,p.r.nazwa_zawodow,fmt(p.score)]){const td=document.createElement('td');td.textContent=value;tr.append(td);}body.append(tr);}if(!data.length)return;
+const min=data[0].date.t,max=data[data.length-1].date.t,ymax=Math.max(100,Math.ceil(Math.max(...data.map(p=>p.score))/50)*50);
+const x=p=>min===max?530:70+(p.date.t-min)/(max-min)*890,y=n=>335-n/ymax*295;
+svg('title',{},`${player.value}: ${metric.options[metric.selectedIndex].text}, ${data.length} startów`);
+for(let i=0;i<=5;i++){const v=ymax*i/5;svg('line',{x1:70,x2:960,y1:y(v),y2:y(v),stroke:'#dce6ed'});svg('text',{x:58,y:y(v)+5,'text-anchor':'end',fill:'#526675','font-size':13},fmt(v));}
+svg('text',{x:70,y:22,fill:'#526675','font-size':13},'Punkty');
+const dates=[...new Map(data.map(p=>[p.date.s,p])).values()];const ticks=dates.length<=6?dates:[0,1,2,3,4,5].map(i=>dates[Math.round(i*(dates.length-1)/5)]);
+for(const p of ticks)svg('text',{x:x(p),y:365,'text-anchor':'middle',fill:'#526675','font-size':13},p.date.s);
+svg('polyline',{points:data.map(p=>`${x(p)},${y(p.score)}`).join(' '),fill:'none',stroke:'#167d98','stroke-width':3});
+for(const p of data){const detail=`${p.date.s} · ${p.r.nazwa_zawodow} · ${fmt(p.score)} pkt`;const c=svg('circle',{cx:x(p),cy:y(p.score),r:6,fill:'#167d98',stroke:'white','stroke-width':2,tabindex:0,'aria-label':detail});const title=document.createElementNS('http://www.w3.org/2000/svg','title');title.textContent=detail;c.append(title);for(const event of ['focus','mouseenter','click'])c.addEventListener(event,()=>{document.getElementById('detail').textContent=detail;});}
+}
+for(const el of [player,metric,from,to])el.addEventListener('change',render);render();
+</script></main></body></html>
