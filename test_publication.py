@@ -8,6 +8,33 @@ import ranking_pzlow_lata as source
 
 
 class PublicationTests(unittest.TestCase):
+    def test_current_calendar_cards_and_legacy_tables(self):
+        html = '''
+        <article class="gwp-ev" data-d="2026-04-11" data-zo="opole">
+          <h4>V Memoriał Jerzego Adamczyka</h4>
+          <div class="gwp-meta"><span>Grudzice · ZO Opole</span></div>
+          <div class="gwp-acts"><a href="/results/">Wyniki</a>
+          <a href="/rules.pdf">Regulamin (PDF)</a></div>
+        </article>
+        <article class="gwp-ev" data-d="2027-04-11"><h4>Bez wyników</h4>
+          <div class="gwp-acts"><a href="/rules.pdf">Regulamin</a></div>
+        </article>
+        <table><tr><th>Lp</th><th>Nazwa zawodów</th><th>ZO PZŁ</th>
+          <th>Strzelnica</th><th>Data zawodów</th><th>Wyniki</th></tr>
+          <tr><td>1</td><td>Archiwum</td><td>Opole</td><td>Grudzice</td>
+          <td>11.04.2025</td><td><a href="/archive/">Wyniki</a></td></tr>
+        </table>'''
+        with patch.object(source, "fetch_html", return_value=html):
+            events = source.pobierz_zawody_z_wynikami()
+        self.assertEqual(len(events), 2)
+        current = events.iloc[0]
+        self.assertEqual(current["rok"], "2026")
+        self.assertEqual(current["data_zawodow"], "2026-04-11")
+        self.assertEqual(current["strzelnica"], "Grudzice")
+        self.assertEqual(current["zo_pzl_zawody"], "Opole")
+        self.assertEqual(current["url_wynikow"], source.BASE_URL + "/results/")
+        self.assertEqual(events.iloc[1]["nazwa_zawodow"], "Archiwum")
+
     def test_iso_dates_and_qualification_boundaries(self):
         events = pd.DataFrame({
             "data_zawodow": ["2026-05-15", "2026-05-16", "2026-08-01", "2026-09-09", "2026-09-10"],
