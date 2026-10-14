@@ -136,6 +136,30 @@ def pobierz_zawody_z_wynikami(*, refresh=False):
 
     print("Liczba tabel terminarza:", len(tables))
 
+    # The current calendar uses event cards; historical seasons still use tables.
+    for event_no, card in enumerate(soup.select("article.gwp-ev[data-d]"), start=1):
+        title = card.find("h4")
+        results_link = next((
+            a for a in card.select(".gwp-acts a[href]")
+            if clean_text(a.get_text(" ", strip=True)).casefold() == "wyniki"
+        ), None)
+        if title is None or results_link is None:
+            continue
+        event_date = clean_text(card.get("data-d", ""))
+        location = card.select_one(".gwp-meta span")
+        location_text = clean_text(location.get_text(" ", strip=True)) if location else ""
+        shooting_range, separator, district = location_text.partition("· ZO ")
+        wyniki.append({
+            "rok": event_date[:4],
+            "nr_tabeli_terminarza": "cards",
+            "lp_zawodow": str(event_no),
+            "nazwa_zawodow": clean_text(title.get_text(" ", strip=True)),
+            "zo_pzl_zawody": district.strip() if separator else clean_text(card.get("data-zo", "")),
+            "strzelnica": shooting_range.strip(),
+            "data_zawodow": event_date,
+            "url_wynikow": urljoin(BASE_URL, results_link["href"]),
+        })
+
     for table_no, table in enumerate(tables, start=1):
         rows = table.find_all("tr")
 
