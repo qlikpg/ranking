@@ -18,7 +18,33 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  refresh-window:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.window.outputs.enabled }}
+    steps:
+      - name: Check refresh start date
+        id: window
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import date, datetime
+          from zoneinfo import ZoneInfo
+
+          # First central event in 2026: 11 April. Resume one week before
+          # the same calendar date in 2027; pushes use saved results.
+          today = datetime.now(ZoneInfo("Europe/Warsaw")).date()
+          enabled = os.environ["EVENT_NAME"] == "push" or today >= date(2027, 4, 4)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"enabled={str(enabled).lower()}\n")
+          print(f"Refresh resumes on 2027-04-04; enabled={enabled}")
+          PY
+
   build:
+    needs: refresh-window
+    if: needs.refresh-window.outputs.enabled == 'true'
     runs-on: ubuntu-latest
 
     steps:
